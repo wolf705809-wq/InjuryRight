@@ -16,6 +16,13 @@ export interface USState {
   sol: string
   attorneyFeeRate: number
   settlementMultiplier?: { low: number; high: number }
+  // E-E-A-T legal fields
+  statute?: string
+  statLink?: string
+  regulator?: string
+  regulatorLink?: string
+  reportingDays?: number
+  filingDeadlineDays?: number
 }
 
 export interface Industry {
