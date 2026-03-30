@@ -140,6 +140,12 @@ export interface LeadFormData {
   impairmentRating?: number
   treatmentWeeks?: number
   employmentStatus?: string
+  employerControl?: string
+  severityLevel?: string
+  treatmentStatus?: string
+  claimStatus?: string
+  companyOffer?: number | null
+  isEstimatedRating?: boolean
   mmiReached?: boolean
   ttdEstimate?: number
   ppdEstimate?: number
@@ -147,6 +153,7 @@ export interface LeadFormData {
   totalLow?: number
   totalHigh?: number
   caseStrength?: string
+  caseStrengthScore?: number
   consent: boolean
   sourceUrl?: string
   utmSource?: string

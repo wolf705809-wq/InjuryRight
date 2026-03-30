@@ -3,7 +3,7 @@ import { US_STATES } from '@/lib/pseo-data'
 import { UPDATE_LOG } from '@/lib/update-log'
 
 export const metadata: Metadata = {
-  title: "How Our Workers' Comp Calculator Works | WorkInjuryCalc",
+  title: "How Our Workers' Comp Calculator Works | WorkerRight",
   description: "Transparent explanation of our calculation methodology, data sources, and limitations.",
 }
 

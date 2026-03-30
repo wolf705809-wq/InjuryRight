@@ -1,7 +1,7 @@
 import CalculatorForm from '@/components/Calculator/CalculatorForm'
 
 export const metadata = {
-  title: 'Free Workers Compensation Calculator — All 47 States | WorkInjuryCalc',
+  title: 'Free Workers Compensation Calculator — All 47 States | WorkerRight',
   description: 'Calculate your workers compensation benefits in 2 minutes. Covers TTD, PPD, and medical costs for all 47 states.',
 }
 

@@ -3,10 +3,10 @@ import type { Metadata } from 'next'
 import { GUIDES } from '@/lib/guides-data'
 
 export const metadata: Metadata = {
-  title: "Workers' Comp Guides 2025 — Step-by-Step Help | WorkInjuryCalc",
+  title: "Workers' Comp Guides 2025 — Step-by-Step Help | WorkerRight",
   description: "Free workers' compensation guides written by attorneys. Learn how to file a claim, negotiate a settlement, appeal a denial, and understand your rights.",
   openGraph: {
-    title: "Workers' Comp Guides 2025 — Step-by-Step Help | WorkInjuryCalc",
+    title: "Workers' Comp Guides 2025 — Step-by-Step Help | WorkerRight",
     description: "Free workers' compensation guides written by attorneys. Learn how to file a claim, negotiate a settlement, appeal a denial, and understand your rights.",
   },
 }

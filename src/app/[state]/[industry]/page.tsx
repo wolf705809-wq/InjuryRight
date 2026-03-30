@@ -18,7 +18,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const industry = INDUSTRIES.find(i => i.slug === params.industry)
   if (!state || !industry) return {}
   return {
-    title: `${industry.name} Workers' Comp in ${state.name} | WorkInjuryCalc`,
+    title: `${industry.name} Workers' Comp in ${state.name} | WorkerRight`,
     description: `${industry.name} workers in ${state.name} receive $${state.avgSettlement.low.toLocaleString()}–$${state.avgSettlement.high.toLocaleString()} on average. Free calculator.`,
   }
 }

@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import ResultsContent from './ResultsContent'
 
 export const metadata = {
-  title: 'Your Compensation Estimate | WorkInjuryCalc',
+  title: 'Your Compensation Estimate | WorkerRight',
   description: 'See your personalised workers compensation estimate.',
 }
 

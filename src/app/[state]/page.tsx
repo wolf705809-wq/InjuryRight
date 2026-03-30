@@ -14,7 +14,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const state = US_STATES.find(s => s.slug === params.state)
   if (!state) return {}
   return {
-    title: `${state.name} Workers' Comp Calculator | WorkInjuryCalc`,
+    title: `${state.name} Workers' Comp Calculator | WorkerRight`,
     description: `Injured at work in ${state.name}? Calculate your compensation. Workers typically receive $${state.avgSettlement.low.toLocaleString()}–$${state.avgSettlement.high.toLocaleString()}. Free assessment.`,
   }
 }

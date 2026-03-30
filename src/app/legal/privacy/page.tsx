@@ -3,7 +3,7 @@ import { SITE_NAME } from '@/lib/compliance'
 
 export const metadata: Metadata = {
   title: `Privacy Policy | ${SITE_NAME}`,
-  description: 'How WorkInjuryCalc collects, uses, and protects your personal information.',
+  description: 'How WorkerRight collects, uses, and protects your personal information.',
 }
 
 export default function PrivacyPage() {
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">1. Information We Collect</h2>
           <p className="text-gray-600 text-sm leading-relaxed mb-3">
-            When you use WorkInjuryCalc, we may collect the following information:
+            When you use WorkerRight, we may collect the following information:
           </p>
           <ul className="list-disc pl-5 text-gray-600 text-sm space-y-1">
             <li>Contact information (name, phone number, email address) that you provide voluntarily</li>
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
         <section className="mb-8">
           <h2 className="text-lg font-semibold text-gray-800 mb-3">4. Referral Fee Disclosure</h2>
           <p className="text-gray-600 text-sm leading-relaxed">
-            WorkInjuryCalc may receive a referral fee from attorneys or law firms when we connect you with their services. This fee does not affect the legal advice you receive or the cost to you — workers' compensation attorneys typically work on contingency.
+            WorkerRight may receive a referral fee from attorneys or law firms when we connect you with their services. This fee does not affect the legal advice you receive or the cost to you — workers' compensation attorneys typically work on contingency.
           </p>
         </section>
 
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
             <li>California residents: additional rights under the CCPA/CPRA</li>
           </ul>
           <p className="text-gray-600 text-sm mt-3">
-            To exercise any of these rights, contact us at privacy@workinjurycalc.com.
+            To exercise any of these rights, contact us at privacy@getfairclaimpro.com.
           </p>
         </section>
 
@@ -116,8 +116,8 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold text-gray-800 mb-3">11. Contact Us</h2>
           <p className="text-gray-600 text-sm leading-relaxed">
             If you have questions about this Privacy Policy or our data practices, please contact:<br />
-            <strong>WorkInjuryCalc</strong><br />
-            Email: privacy@workinjurycalc.com
+            <strong>WorkerRight</strong><br />
+            Email: privacy@getfairclaimpro.com
           </p>
         </section>
       </div>

@@ -13,7 +13,7 @@ export function generateMetadata({ params }: Props): Metadata {
   const injury = INJURY_TYPES.find(i => i.slug === params.injury)
   if (!injury) return {}
   return {
-    title: `${injury.name} Workers' Comp Claims | WorkInjuryCalc`,
+    title: `${injury.name} Workers' Comp Claims | WorkerRight`,
     description: `Workers' compensation claims for ${injury.name.toLowerCase()}. Average medical costs: $${injury.avgMedicalCost.toLocaleString()}. Free settlement estimate — no obligation.`,
     alternates: { canonical: `/injuries/${params.injury}` },
   }

@@ -24,46 +24,64 @@ export default function InjuryPageTemplate({ state, industry, injury }: Props) {
   return (
     <main className="bg-white">
       {/* Hero */}
-      <section className="border-b border-gray-200 py-14 px-8">
+      <section className="border-b border-[#e5e7eb] py-14 px-8">
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-start">
           <div>
-            <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-800 text-[11px] font-medium px-3 py-1 rounded-full mb-5">
-              <span className="text-emerald-600">●</span>
+            {/* Eyebrow */}
+            <p className="eyebrow mb-5">
               {state.name} Workers&apos; Comp · {injury.category === 'occupational' ? 'Occupational Disease' : 'Injury Claim'}
-            </span>
-            <h1
-              className="font-semibold text-gray-900 leading-tight mb-2"
-              style={{ fontSize: 'clamp(20px, 3.5vw, 30px)', letterSpacing: '-0.4px' }}
-            >
-              {copy.heroHeadline}
-            </h1>
-            <p className="text-[12px] text-gray-400 mb-4">
-              Last updated: {CURRENT_YEAR} · Verified against {state.name} DWC regulations
             </p>
+
+            {/* H1 — serif 2-line */}
+            <h1
+              className="serif font-bold leading-[1.12] mb-0"
+              style={{ fontSize: 'clamp(28px,5vw,42px)', letterSpacing: '-0.04em' }}
+            >
+              <span className="text-[#111827] block">{injury.name} at work in {state.name}?</span>
+              <span className="text-[#059669] block">Here&apos;s what the law actually says you&apos;re owed.</span>
+            </h1>
+
+            {/* Emerald divider */}
+            <div className="em-divider" />
+
+            {/* Statute box */}
+            {stateContent && (
+              <div
+                className="bg-[#fafaf9] rounded-r-lg px-5 py-4 mb-5 text-[14px] text-[#374151] leading-[1.7]"
+                style={{ borderLeft: '3px solid #059669' }}
+              >
+                In {state.name}, {injury.name.toLowerCase()} claims are governed by{' '}
+                <span className="font-medium">{stateContent.statute}</span>. Workers receive{' '}
+                <span className="font-medium">{(state.ttdRate * 100).toFixed(0)}%</span> of their
+                average weekly wage (capped at{' '}
+                <span className="font-medium">${state.maxWeeklyBenefit.toLocaleString()}/week</span>).
+                Filing deadline: <span className="font-medium text-[#dc2626]">{state.sol}</span> from date of injury.
+              </div>
+            )}
 
             {/* Legal Reviewer */}
             <LegalReviewer state={state.slug} />
 
-            <p className="text-gray-500 text-base leading-relaxed mb-6">{copy.heroSub}</p>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-600 leading-relaxed">
-              {copy.statCallout}
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <p className="text-[#6b7280] text-[15px] leading-relaxed mb-5">{copy.heroSub}</p>
+
+            <div className="mt-4 flex flex-wrap gap-3">
               {[
                 { label: 'Avg low',  value: `$${state.avgSettlement.low.toLocaleString()}` },
                 { label: 'Avg high', value: `$${state.avgSettlement.high.toLocaleString()}` },
                 { label: 'Deadline', value: state.sol.split(' ')[0] + ' ' + state.sol.split(' ')[1] },
               ].map(s => (
-                <div key={s.label} className="border border-gray-200 rounded-lg px-4 py-3 text-center min-w-[90px]">
-                  <p className="text-emerald-600 font-semibold text-sm">{s.value}</p>
-                  <p className="text-gray-400 text-[11px] mt-0.5">{s.label}</p>
+                <div key={s.label} className="border border-[#e5e7eb] rounded-[10px] px-4 py-3 text-center min-w-[90px]">
+                  <p className="text-[#059669] font-semibold text-sm">{s.value}</p>
+                  <p className="text-[#9ca3af] text-[11px] mt-0.5">{s.label}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="border border-gray-200 rounded-xl p-6 bg-white">
-            <p className="text-xs text-gray-500 mb-4">Pre-filled for your situation — just add your wage &amp; impairment info.</p>
+          <div className="border border-[#e5e7eb] rounded-[10px] p-6 bg-white">
+            <p className="eyebrow mb-4">
+              Estimate your {state.name}-specific benefits:
+            </p>
             <CalculatorForm
               preselectedState={state.slug}
               preselectedIndustry={industry.slug}

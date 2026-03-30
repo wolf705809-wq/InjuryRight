@@ -3,7 +3,7 @@ import { SITE_NAME, FOOTER_DISCLAIMER, RESULTS_DISCLAIMER } from '@/lib/complian
 
 export const metadata: Metadata = {
   title: `Legal Disclaimer | ${SITE_NAME}`,
-  description: 'Important legal disclaimers for WorkInjuryCalc users.',
+  description: 'Important legal disclaimers for WorkerRight users.',
 }
 
 export default function DisclaimerPage() {
@@ -17,7 +17,7 @@ export default function DisclaimerPage() {
           <section className="bg-red-50 border border-red-200 rounded-lg p-5">
             <h2 className="text-base font-bold text-red-800 mb-2">Not Legal Advice</h2>
             <p className="text-red-700">
-              WorkInjuryCalc is not a law firm and does not provide legal advice. Nothing on this website constitutes legal advice or creates an attorney-client relationship. For advice about your specific situation, consult a licensed workers' compensation attorney in your state.
+              WorkerRight is not a law firm and does not provide legal advice. Nothing on this website constitutes legal advice or creates an attorney-client relationship. For advice about your specific situation, consult a licensed workers' compensation attorney in your state.
             </p>
           </section>
 
@@ -38,7 +38,7 @@ export default function DisclaimerPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-800 mb-3">Attorney Advertising</h2>
             <p>
-              This website constitutes attorney advertising under applicable state bar rules. WorkInjuryCalc connects injured workers with licensed attorneys and may receive compensation for those connections. Past results referenced on this website do not guarantee similar outcomes in future cases.
+              This website constitutes attorney advertising under applicable state bar rules. WorkerRight connects injured workers with licensed attorneys and may receive compensation for those connections. Past results referenced on this website do not guarantee similar outcomes in future cases.
             </p>
           </section>
 
@@ -55,7 +55,7 @@ export default function DisclaimerPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-800 mb-3">No Guarantee of Results</h2>
             <p>
-              Compensation estimates provided by the WorkInjuryCalc calculator are based on publicly available averages and statistical data. Individual outcomes vary based on the severity of injury, employer cooperation, medical documentation, legal representation, and other factors outside our control. We make no guarantee that you will receive any particular compensation amount.
+              Compensation estimates provided by the WorkerRight calculator are based on publicly available averages and statistical data. Individual outcomes vary based on the severity of injury, employer cooperation, medical documentation, legal representation, and other factors outside our control. We make no guarantee that you will receive any particular compensation amount.
             </p>
           </section>
 
@@ -72,20 +72,20 @@ export default function DisclaimerPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-800 mb-3">Third-Party Attorneys</h2>
             <p>
-              WorkInjuryCalc does not employ attorneys and is not responsible for the conduct, advice, or outcomes of attorneys to whom we refer users. The attorneys in our network are independent legal professionals. You should independently verify an attorney's credentials, bar status, and experience before retaining their services.
+              WorkerRight does not employ attorneys and is not responsible for the conduct, advice, or outcomes of attorneys to whom we refer users. The attorneys in our network are independent legal professionals. You should independently verify an attorney's credentials, bar status, and experience before retaining their services.
             </p>
           </section>
 
           <section>
             <h2 className="text-lg font-semibold text-gray-800 mb-3">Accuracy of Data</h2>
             <p>
-              While we make reasonable efforts to ensure data accuracy, settlement averages, benefit rates, and legal information are subject to change. WorkInjuryCalc makes no representations or warranties about the accuracy, completeness, or timeliness of information on this site.
+              While we make reasonable efforts to ensure data accuracy, settlement averages, benefit rates, and legal information are subject to change. WorkerRight makes no representations or warranties about the accuracy, completeness, or timeliness of information on this site.
             </p>
           </section>
 
           <section className="border-t border-gray-200 pt-6">
             <p className="text-gray-400 text-xs">
-              By using WorkInjuryCalc, you acknowledge that you have read and understood this disclaimer. If you do not agree with any part of this disclaimer, please discontinue use of this website.
+              By using WorkerRight, you acknowledge that you have read and understood this disclaimer. If you do not agree with any part of this disclaimer, please discontinue use of this website.
             </p>
           </section>
         </div>

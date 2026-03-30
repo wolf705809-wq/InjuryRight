@@ -27,7 +27,7 @@ export function generateMetadata({ params }: Props): Metadata {
     title: copy.metaTitle,
     description: copy.metaDesc,
     alternates: {
-      canonical: `https://workinjurycalc.com/${params.state}/${params.industry}/${params.injury}`,
+      canonical: `https://getfairclaimpro.com/${params.state}/${params.industry}/${params.injury}`,
     },
   }
 }
@@ -53,7 +53,7 @@ export default function InjuryPage({ params }: Props) {
   const legalServiceSchema = {
     '@context': 'https://schema.org',
     '@type': 'LegalService',
-    name: 'WorkInjuryCalc',
+    name: 'WorkerRight',
     description: copy.metaDesc,
     areaServed: { '@type': 'State', name: state.name },
     serviceType: 'Workers Compensation',

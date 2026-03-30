@@ -4,10 +4,10 @@ import { US_STATES, INJURY_TYPES } from '@/lib/pseo-data'
 import { NATIONAL_STATS, getStateSettlement } from '@/lib/settlement-data'
 
 export const metadata: Metadata = {
-  title: "US Workers' Comp Statistics 2025 — All 47 States | WorkInjuryCalc",
+  title: "US Workers' Comp Statistics 2025 — All 47 States | WorkerRight",
   description: "State-by-state average settlements, injury rates, and weekly benefit caps. Data sourced from BLS and state DWC reports.",
   openGraph: {
-    title: "US Workers' Comp Statistics 2025 — All 47 States | WorkInjuryCalc",
+    title: "US Workers' Comp Statistics 2025 — All 47 States | WorkerRight",
     description: "State-by-state average settlements, injury rates, and weekly benefit caps. Data sourced from BLS and state DWC reports.",
   },
 }
@@ -17,8 +17,8 @@ const datasetSchema = {
   '@type': 'Dataset',
   name: "US Workers' Compensation Settlement Statistics 2025",
   description: 'State-by-state workers\' comp settlement data',
-  url: 'https://workinjurycalc.com/workers-comp-statistics',
-  creator: { '@type': 'Organization', name: 'WorkInjuryCalc' },
+  url: 'https://getfairclaimpro.com/workers-comp-statistics',
+  creator: { '@type': 'Organization', name: 'WorkerRight' },
   temporalCoverage: '2020/2023',
   spatialCoverage: 'United States',
 }

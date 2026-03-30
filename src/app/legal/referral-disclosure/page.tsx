@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Referral Fee Disclosure | WorkInjuryCalc',
-  description: 'Full disclosure of referral fee relationships between WorkInjuryCalc and its attorney network.',
+  title: 'Referral Fee Disclosure | WorkerRight',
+  description: 'Full disclosure of referral fee relationships between WorkerRight and its attorney network.',
 }
 
 export default function ReferralDisclosurePage() {
@@ -17,7 +17,7 @@ export default function ReferralDisclosurePage() {
         <div className="prose prose-sm max-w-none space-y-6 text-gray-600">
           <section>
             <p className="leading-relaxed">
-              WorkInjuryCalc receives compensation when injured workers connect with attorneys through
+              WorkerRight receives compensation when injured workers connect with attorneys through
               our platform.
             </p>
           </section>
@@ -54,14 +54,14 @@ export default function ReferralDisclosurePage() {
             <h2 className="text-base font-semibold text-gray-900 mb-3">Your Rights</h2>
             <p className="text-sm leading-relaxed">
               You have the right to hire any attorney of your choosing. You are under no obligation to
-              use an attorney introduced through WorkInjuryCalc. The information and estimates we
+              use an attorney introduced through WorkerRight. The information and estimates we
               provide are available to you regardless of whether you use our attorney matching service.
             </p>
           </section>
 
           <section className="border-t border-gray-200 pt-6">
             <p className="text-[11px] text-gray-400 leading-relaxed">
-              WorkInjuryCalc is not a law firm. Prior results do not guarantee similar outcomes.
+              WorkerRight is not a law firm. Prior results do not guarantee similar outcomes.
               Attorney advertising.
             </p>
           </section>

@@ -93,9 +93,21 @@ export default function ResultsContent() {
       injuryType: input.injurySlug,
       weeklyWage: input.weeklyWage,
       employmentMonths: input.employmentMonths,
+      employmentStatus: input.employmentStatus,
+      employerControl: input.employerControl ?? undefined,
+      severityLevel: input.severityLevel,
+      treatmentStatus: input.treatmentStatus,
+      claimStatus: input.claimStatus,
+      companyOffer: input.companyOffer,
+      isEstimatedRating: breakdown.isEstimatedRating,
+      impairmentRating: breakdown.impairmentRatingUsed,
+      ttdEstimate: breakdown.ttd,
+      ppdEstimate: breakdown.ppd,
+      medicalEstimate: breakdown.medicalEstimate,
       totalLow: scenarios.conservative.total,
       totalHigh: scenarios.bestCase.total,
       caseStrength,
+      caseStrengthScore,
       consent,
       sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
     })
@@ -471,7 +483,7 @@ export default function ResultsContent() {
             <p className="text-[11px] text-gray-400 leading-[1.7]">
               This calculator provides estimates for informational purposes only and does not constitute legal advice.
               Results are based on state law formulas and statistical averages — actual compensation depends on the
-              specific facts of your case. WorkInjuryCalc is not a law firm. Attorney advertising. Prior results do not
+              specific facts of your case. WorkerRight is not a law firm. Attorney advertising. Prior results do not
               guarantee similar outcomes. Always consult a licensed workers&apos; compensation attorney in your state.
             </p>
           </div>

@@ -14,13 +14,13 @@ export function generateMetadata({ params }: Props): Metadata {
   const guide = GUIDES.find(g => g.slug === params.slug)
   if (!guide) return {}
   return {
-    title: `${guide.title} | WorkInjuryCalc`,
+    title: `${guide.title} | WorkerRight`,
     description: guide.description,
     alternates: {
-      canonical: `https://workinjurycalc.com/guides/${guide.slug}`,
+      canonical: `https://getfairclaimpro.com/guides/${guide.slug}`,
     },
     openGraph: {
-      title: `${guide.title} | WorkInjuryCalc`,
+      title: `${guide.title} | WorkerRight`,
       description: guide.description,
     },
   }
@@ -49,15 +49,15 @@ export default function GuidePage({ params }: Props) {
     description: guide.description,
     author: {
       '@type': 'Organization',
-      name: 'WorkInjuryCalc',
-      url: 'https://workinjurycalc.com',
+      name: 'WorkerRight',
+      url: 'https://getfairclaimpro.com',
     },
     publisher: {
       '@type': 'Organization',
-      name: 'WorkInjuryCalc',
+      name: 'WorkerRight',
     },
     dateModified: '2025-01-01',
-    url: `https://workinjurycalc.com/guides/${guide.slug}`,
+    url: `https://getfairclaimpro.com/guides/${guide.slug}`,
   }
 
   return (

@@ -7,8 +7,19 @@ import Footer from '@/components/Layout/Footer'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'WorkInjuryCalc — US Workers Compensation Calculator',
-  description: 'Free workers compensation calculator for all 47 states. Find out what your injury claim is worth in under 2 minutes.',
+  title: {
+    default: "WorkerRight — Know Your Rights. Get What You're Owed.",
+    template: '%s | WorkerRight',
+  },
+  description:
+    "Free workers' comp, wrongful termination, and gig worker rights calculators for all 47 US states. State-specific estimates in 2 minutes. Reviewed by licensed attorneys.",
+  openGraph: {
+    siteName: 'WorkerRight',
+    title: "WorkerRight — Know Your Rights. Get What You're Owed.",
+    description:
+      "Free state-specific calculators for workers' comp and wrongful termination claims.",
+    type: 'website',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

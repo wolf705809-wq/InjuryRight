@@ -1,136 +1,282 @@
 import Link from 'next/link'
-import TrustBar from '@/components/Layout/TrustBar'
-import { US_STATES, INDUSTRIES } from '@/lib/pseo-data'
 
-const CASES = [
-  { tag: 'Back injury',  desc: 'Warehouse worker, forklift accident, L4-L5 herniation',          amount: '$68,400',  meta: 'California · 2024' },
-  { tag: 'Amputation',   desc: 'Manufacturing worker, press machine, finger amputation',           amount: '$142,000', meta: 'Illinois · 2024' },
-  { tag: 'TBI',          desc: 'Construction worker, fall from scaffold, traumatic brain injury',  amount: '$215,000', meta: 'Texas · 2023' },
+// ── Section 3: The Turn data ──────────────────────────────────────────────────
+const TURN_STATS = [
+  {
+    number:  '$42,000',
+    label:   "Average workers' comp settlement",
+    sub:     'Most initial offers are 40–60% of this',
+    subRed:  true,
+  },
+  {
+    number:  '2×',
+    label:   'Higher settlements with an attorney',
+    sub:     'Source: BLS & NCCI data',
+    subRed:  false,
+  },
+  {
+    number:  '1 year',
+    label:   'Average time before insurers offer settlement',
+    sub:     'The longer you wait, the less leverage you have',
+    subRed:  true,
+  },
 ]
 
-const BY_THE_NUMBERS = [
-  { v: '$1.2B', l: "Total workers' comp paid in CA (2023)" },
-  { v: '2.6M',  l: 'Work injury claims filed annually (US)' },
-  { v: '2.4×',  l: 'More compensation with an attorney (avg)' },
-  { v: '1 yr',  l: 'Average time to settlement with attorney' },
+// ── Section 5: Dark Data ──────────────────────────────────────────────────────
+const DARK_STATS = [
+  { number: '$1.2B', label: "Total workers' comp paid in CA (2023)",    source: 'Source: CA DWC Annual Report' },
+  { number: '2.6M',  label: 'Work injury claims filed annually in the US', source: 'Source: Bureau of Labor Statistics' },
+  { number: '68%',   label: "Of injured workers don't hire an attorney",   source: 'Source: NCCI' },
+  { number: '40%',   label: 'Gap between first offer and final settlement', source: 'With legal representation' },
+]
+
+// ── Section 7: Social Proof ───────────────────────────────────────────────────
+const CASES = [
+  {
+    tag:    'Construction · Houston, TX',
+    amount: '$31,000',
+    offer:  "Employer's first offer: $8,200",
+    body:   'After understanding the actual formula, settled for nearly 4× the initial offer.',
+    foot:   'Back injury · 6 years employed',
+  },
+  {
+    tag:    'Warehouse · Chicago, IL',
+    amount: 'Full benefits',
+    offer:  'Claim initially denied',
+    body:   'Learned about appeal rights. Attorney secured full medical + wage benefits.',
+    foot:   'Knee injury · MMI reached',
+  },
+  {
+    tag:    'Platform Worker · Los Angeles, CA',
+    amount: '$38K–$67K',
+    offer:  'Estimated range · case pending',
+    body:   'Flagged as possible misclassification. Now pursuing full employee benefits.',
+    foot:   'Shoulder injury · 2 yrs on platform',
+  },
 ]
 
 export default function HomePage() {
   return (
     <main>
-      {/* Hero */}
-      <section className="bg-white py-16 px-8">
-        <div className="max-w-2xl mx-auto text-center">
-          <h1 className="font-bold leading-[1.2] mb-5 text-[clamp(28px,5vw,48px)]">
-            <span className="text-gray-900 block">You got hurt at work.</span>
-            <span className="text-emerald-600 block">Your employer already has a lawyer.</span>
-          </h1>
 
-          <p className="text-[15px] text-gray-500 leading-[1.7] mb-2 max-w-[480px] mx-auto">
-            Injured workers with attorneys receive 2.4× more compensation on average.*{' '}
-            Know your number before they make you an offer.
-          </p>
-
-          <Link
-            href="/calculator"
-            className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-[15px] font-medium px-7 py-[14px] rounded-lg transition-all hover:scale-[1.01] mt-4 mb-3"
+      {/* ── 1: HERO (Layer C — Humanist Minimal) ────────────────────────── */}
+      <section className="section-white">
+        <div className="section-inner">
+          <p className="eyebrow mb-5">US Workers&apos; Rights · 47 States</p>
+          <h1
+            className="serif font-bold leading-[1.12] mb-0"
+            style={{ fontSize: 'clamp(32px,5vw,48px)', letterSpacing: '-0.04em' }}
           >
-            Calculate what I&apos;m owed →
-          </Link>
-
-          <p className="text-[12px] text-gray-400">
-            47 states covered · No win, no fee · Free forever
+            <span className="text-[#111827] block">The day you got hurt,</span>
+            <span className="text-[#059669] block">their adjuster was already working.</span>
+          </h1>
+          <div className="em-divider" />
+          <p className="body-large mb-4 max-w-[520px]">
+            Insurance adjusters are measured by how little they pay out. Most injured workers
+            don&apos;t know this until it&apos;s too late.
           </p>
-
-          <p className="text-[11px] mt-3 text-gray-400">
-            * Source: NCCI Workers Compensation Statistical Data 2023
+          <p className="text-base font-semibold text-[#111827] leading-[1.8] mb-6 max-w-[520px]">
+            WorkerRight gives you the same information they have — free.
           </p>
-        </div>
-
-        {/* Mission box */}
-        <div className="max-w-[640px] mx-auto mt-8 bg-gray-50 border-l-[3px] border-emerald-600 rounded-r-lg py-6 px-7">
-          <p className="text-[15px] leading-[1.8] text-gray-700">
-            When you&apos;re injured at work, the clock starts immediately. Your employer notifies their insurer.
-            The insurer assigns an adjuster — someone whose performance is measured by how much they save the company
-            on claims.
-          </p>
-          <p className="text-[15px] leading-[1.8] mt-4 font-semibold text-gray-900">
-            You&apos;re expected to navigate this alone.
-          </p>
-          <p className="text-[15px] leading-[1.8] mt-4 text-gray-700">
-            We built WorkInjuryCalc because that&apos;s not fair. The formulas exist. The law is public.
-            We made it accessible — free, in 2 minutes, before you&apos;ve spoken to anyone.
-          </p>
+          <div className="flex items-center gap-4 flex-wrap">
+            <Link
+              href="/calculator"
+              className="inline-block text-white text-[14px] font-medium px-[26px] py-[13px] rounded-lg transition-all hover:opacity-90 active:scale-[0.99]"
+              style={{ background: '#059669' }}
+            >
+              See what your case is worth →
+            </Link>
+            <p className="text-[12px] text-[#9ca3af]">Free · 47 states · 2 minutes · No obligation</p>
+          </div>
         </div>
       </section>
 
-      <TrustBar />
+      {/* ── 2: TRUST STRIP (Layer A — Editorial) ────────────────────────── */}
+      <div className="border-t border-b border-[#e5e7eb] px-8 py-4">
+        <div className="flex gap-x-8 gap-y-2 justify-center flex-wrap">
+          {[
+            '47 states covered',
+            'Free always',
+            'Licensed attorney network',
+            'No win, no fee',
+            'Results in 2 minutes',
+          ].map(item => (
+            <span key={item} className="flex items-center gap-2 text-[12px] text-[#6b7280]">
+              <span className="w-[5px] h-[5px] rounded-full bg-[#059669] shrink-0" />
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
 
-      {/* By the numbers */}
-      <section className="py-14 px-8 bg-gray-900">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl font-semibold text-white text-center mb-10">By the numbers</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {BY_THE_NUMBERS.map(s => (
-              <div key={s.v}>
-                <p className="text-3xl font-bold text-white">{s.v}</p>
-                <p className="text-sm text-gray-400 mt-2 leading-snug">{s.l}</p>
+      {/* ── 3: THE TURN — Data (Layer A) ─────────────────────────────────── */}
+      <section className="border-b border-[#e5e7eb] px-8 py-10">
+        <div className="max-w-[660px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          {TURN_STATS.map(s => (
+            <div key={s.number}>
+              <span className="stat-number">{s.number}</span>
+              <p className="text-[14px] font-medium text-[#111827] leading-snug mt-3 mb-1">{s.label}</p>
+              <p className={`text-[12px] leading-snug ${s.subRed ? 'text-[#dc2626]' : 'text-[#9ca3af]'}`}>{s.sub}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 4: ORIGIN STORY (Layer C — Humanist) ─────────────────────────── */}
+      <section className="section-warm">
+        <div className="section-inner">
+          <p className="eyebrow mb-5">Why WorkerRight exists</p>
+          <h2
+            className="serif font-bold text-[#111827]"
+            style={{ fontSize: 'clamp(22px,4vw,32px)', letterSpacing: '-0.03em' }}
+          >
+            The information was never secret.
+            <br />
+            It just wasn&apos;t yours.
+          </h2>
+          <div className="em-divider" />
+          <div className="space-y-5">
+            <p className="text-[15px] text-[#374151] leading-[1.9]">
+              We came from the insurance industry. We know how adjusters are trained. We know the
+              formulas they use to calculate what to offer you — and when to offer less.
+            </p>
+            <p className="text-[15px] text-[#374151] leading-[1.9]">
+              That information was never secret. It was just never made accessible. State workers&apos;
+              comp law is public. The formulas are public. The settlement data is public.
+              <br /><br />
+              It just takes time to find, understand, and apply. Time that most injured workers
+              don&apos;t have.
+            </p>
+            <p className="text-[15px] font-semibold text-[#111827] leading-[1.9]">
+              WorkerRight does that work for you. Free. In 2 minutes. Before you&apos;ve spoken
+              to anyone.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5: DARK DATA (Layer B — Dark Authority) ──────────────────────── */}
+      <section className="section-dark">
+        <div className="section-inner">
+          <p className="eyebrow mb-4">By the numbers</p>
+          <h2
+            className="serif font-bold text-white mb-2"
+            style={{ fontSize: 'clamp(20px,3.5vw,28px)', letterSpacing: '-0.03em' }}
+          >
+            The system is designed to pay you less.
+          </h2>
+          <p className="text-[14px] text-[#6b7280] mb-8">Here&apos;s what the data actually shows.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {DARK_STATS.map(s => (
+              <div key={s.number} className="rounded-[10px] p-5" style={{ background: '#1a2235' }}>
+                <span className="stat-number mb-3">{s.number}</span>
+                <p className="text-[12px] text-[#9ca3af] leading-snug mt-3 mb-1">{s.label}</p>
+                <p className="text-[10px] text-[#4b5563]">{s.source}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Recent cases */}
-      <section className="bg-white py-10 px-8">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-[13px] text-gray-500 mb-6">Recent settlements handled by our attorney network</p>
+      {/* ── 6: HOW IT WORKS (Layer B) ────────────────────────────────────── */}
+      <section style={{ background: '#111827' }}>
+        <div className="section-inner">
+          <p className="eyebrow mb-4">How it works</p>
+          <h2
+            className="serif font-bold text-white mb-10"
+            style={{ fontSize: 'clamp(20px,4vw,32px)', letterSpacing: '-0.03em' }}
+          >
+            Three steps to knowing your number
+          </h2>
+          <div className="space-y-0 divide-y divide-[#1f2937]">
+            {[
+              {
+                n:    '01',
+                title:'Answer 7 questions',
+                desc: 'Tell us about your injury, your state, and your situation. Takes 2 minutes.',
+              },
+              {
+                n:    '02',
+                title:'See the actual formula',
+                desc: "We show you the same calculation your state's workers' comp board uses — and what similar cases have settled for.",
+              },
+              {
+                n:    '03',
+                title:'Walk in prepared',
+                desc: 'Use the information however you choose. Connect with an attorney, or don\'t. No pressure. No obligation. No catch.',
+                italic: 'however you choose',
+              },
+            ].map(step => (
+              <div key={step.n} className="flex items-start gap-6 py-7">
+                <span className="text-[32px] font-bold text-[#059669] leading-none shrink-0 w-12">{step.n}</span>
+                <div>
+                  <p className="text-[16px] font-semibold text-white mb-1">{step.title}</p>
+                  <p className="text-[14px] text-[#6b7280] leading-[1.7]">
+                    {step.n === '03'
+                      ? <>Use the information <em className="not-italic font-normal text-[#10b981]">however you choose</em>. Connect with an attorney, or don&apos;t. No pressure. No obligation. No catch.</>
+                      : step.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 7: SOCIAL PROOF (Layer A — Editorial) ────────────────────────── */}
+      <section className="section-white">
+        <div className="section-inner">
+          <p className="eyebrow mb-4">Real outcomes</p>
+          <h2
+            className="serif font-bold text-[#111827] mb-2"
+            style={{ fontSize: 'clamp(20px,3.5vw,28px)', letterSpacing: '-0.03em' }}
+          >
+            Workers who came prepared.
+          </h2>
+          <p className="text-[12px] text-[#9ca3af] mb-8">Illustrative cases based on typical outcomes. Individual results vary.</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {CASES.map(c => (
-              <div key={c.desc} className="border border-gray-200 rounded-[10px] p-[18px]">
-                <span className="inline-block bg-emerald-100 text-emerald-800 text-[11px] font-medium px-2 py-0.5 rounded mb-3">{c.tag}</span>
-                <p className="text-gray-600 text-sm leading-relaxed mb-3">{c.desc}</p>
-                <p className="text-gray-900 text-lg font-semibold">{c.amount}</p>
-                <p className="text-[11px] text-gray-400 mt-0.5">{c.meta}</p>
+              <div key={c.tag} className="border border-[#e5e7eb] rounded-[10px] p-5 flex flex-col gap-3">
+                <span className="inline-block text-[10px] font-medium text-[#065f46] bg-[#ecfdf5] px-3 py-1 rounded-full self-start">
+                  {c.tag}
+                </span>
+                <div>
+                  <p className="text-[18px] font-bold text-[#111827] leading-tight">{c.amount}</p>
+                  <p className="text-[11px] text-[#9ca3af] mt-0.5">{c.offer}</p>
+                </div>
+                <p className="text-[13px] text-[#374151] leading-[1.65] flex-1">{c.body}</p>
+                <p className="text-[11px] text-[#9ca3af] border-t border-[#e5e7eb] pt-3">{c.foot}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Browse by industry */}
-      <section className="bg-gray-50 py-12 px-8">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl font-semibold text-gray-900 text-center mb-8">Browse by industry</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {INDUSTRIES.map(ind => (
-              <Link key={ind.slug} href={'/california/' + ind.slug}
-                className="border border-gray-200 hover:border-emerald-500 rounded-xl p-4 transition-colors group bg-white">
-                <p className="text-sm font-medium text-gray-900 group-hover:text-emerald-700">{ind.name}</p>
-                <p className="text-[11px] text-gray-400 mt-1 capitalize">{ind.riskLevel} risk</p>
-              </Link>
-            ))}
-          </div>
-        </div>
+      {/* ── 8: FINAL CTA ─────────────────────────────────────────────────── */}
+      <section className="text-center px-8 py-16" style={{ background: '#059669' }}>
+        <h2
+          className="serif font-bold text-white mb-2"
+          style={{ fontSize: 'clamp(20px,4vw,32px)', letterSpacing: '-0.03em' }}
+        >
+          Before anyone calls you with an offer —
+        </h2>
+        <p
+          className="serif font-bold mb-7"
+          style={{ fontSize: 'clamp(18px,3vw,26px)', color: 'rgba(255,255,255,0.9)' }}
+        >
+          Know what you&apos;re owed.
+        </p>
+        <Link
+          href="/calculator"
+          className="inline-block bg-white text-[#059669] text-[14px] font-semibold px-8 py-[14px] rounded-lg transition-colors hover:bg-[#f0fdf4]"
+        >
+          Calculate my compensation →
+        </Link>
+        <p className="text-[12px] mt-3" style={{ color: 'rgba(255,255,255,0.6)' }}>
+          Free · No sign-up · No obligation
+        </p>
       </section>
 
-      {/* All states */}
-      <section className="bg-white border-t border-gray-200 py-10 px-8">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-[11px] text-gray-400 uppercase tracking-widest text-center mb-5">All 47 states covered</p>
-          <div className="flex flex-wrap gap-2 justify-center">
-            {US_STATES.slice(0, 20).map(s => (
-              <Link key={s.slug} href={'/' + s.slug}
-                className="text-gray-500 hover:text-gray-800 text-sm px-3 py-1.5 rounded-md border border-gray-200 hover:border-gray-400 transition-colors">
-                {s.name}
-              </Link>
-            ))}
-            <Link href="/calculator" className="text-emerald-600 hover:text-emerald-800 text-sm px-3 py-1.5 rounded-md border border-emerald-200 hover:border-emerald-400 transition-colors">
-              + {US_STATES.length - 20} more states →
-            </Link>
-          </div>
-        </div>
-      </section>
     </main>
   )
 }

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Attorney Advertising Disclosure | WorkInjuryCalc',
-  description: 'State-specific attorney advertising disclosures for WorkInjuryCalc.',
+  title: 'Attorney Advertising Disclosure | WorkerRight',
+  description: 'State-specific attorney advertising disclosures for WorkerRight.',
 }
 
 const STATE_DISCLOSURES = [
@@ -33,7 +33,7 @@ export default function AttorneyAdvertisingPage() {
               This website contains attorney advertising. Prior results do not guarantee similar outcomes.
             </p>
             <p className="text-sm leading-relaxed">
-              WorkInjuryCalc connects injured workers with licensed workers&apos; compensation attorneys.
+              WorkerRight connects injured workers with licensed workers&apos; compensation attorneys.
               The following state-specific disclosures apply:
             </p>
           </section>
@@ -51,7 +51,7 @@ export default function AttorneyAdvertisingPage() {
 
           <section className="border-t border-gray-200 pt-6">
             <p className="text-[11px] text-gray-400 leading-relaxed">
-              WorkInjuryCalc is not a law firm and does not provide legal advice. Attorney-client
+              WorkerRight is not a law firm and does not provide legal advice. Attorney-client
               relationships are formed solely between the client and the individual attorney. All
               attorneys in our network are licensed in their respective states.
             </p>

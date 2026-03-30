@@ -2,14 +2,14 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Contact WorkInjuryCalc',
+  title: 'Contact WorkerRight',
   description: "Contact our team for questions about workers' compensation calculations or our service.",
 }
 
 const contactSchema = {
   '@context': 'https://schema.org',
   '@type': 'ContactPage',
-  name: 'Contact WorkInjuryCalc',
+  name: 'Contact WorkerRight',
 }
 
 export default function ContactPage() {
@@ -46,8 +46,8 @@ export default function ContactPage() {
           <section className="mb-8">
             <h2 className="text-base font-semibold text-gray-900 mb-3">Email</h2>
             <p className="text-sm text-gray-600 mb-1">
-              <a href="mailto:info@workinjurycalc.com" className="text-emerald-700 hover:underline font-medium">
-                info@workinjurycalc.com
+              <a href="mailto:info@getfairclaimpro.com" className="text-emerald-700 hover:underline font-medium">
+                info@getfairclaimpro.com
               </a>
             </p>
             <p className="text-sm text-gray-500">
@@ -81,7 +81,7 @@ export default function ContactPage() {
 
           <div className="border-t border-gray-200 pt-6">
             <p className="text-[11px] text-gray-400 leading-relaxed">
-              WorkInjuryCalc is not a law firm. Prior results do not guarantee similar outcomes.
+              WorkerRight is not a law firm. Prior results do not guarantee similar outcomes.
               Attorney advertising.
             </p>
           </div>
