@@ -100,21 +100,7 @@ export default function ResultsContent() {
     whyThisNumber, filingDeadline, coverageNote,
   } = result
 
-  const scrollToForm = useCallback(() => {
-    document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }, [])
-
-  const handleCallClick = useCallback(async () => {
-    await trackCallClick({
-      state: input.state,
-      injury: input.injurySlug,
-      estimatedTotal: scenarios.expected.total,
-      sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
-    })
-  }, [input.state, input.injurySlug, scenarios.expected.total])
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = useCallback(async () => {
     if (!consent) { setFormError('You must agree to be contacted.'); return }
     setSubmitting(true); setFormError('')
     const res = await saveLead({
@@ -146,9 +132,16 @@ export default function ResultsContent() {
     setSubmitting(false)
     if (res.success) setSubmitted(true)
     else setFormError('Something went wrong. Please try again.')
-  }
+  }, [name, email, phone, consent, input, breakdown, scenarios, caseStrength, caseStrengthScore])
 
-  const inputCls = 'w-full px-3 py-[10px] border border-[#e5e7eb] rounded-lg text-[13px] text-[#111827] bg-white placeholder:text-[#9ca3af] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669]/10'
+  const handleCallClick = useCallback(async () => {
+    await trackCallClick({
+      state: input.state,
+      injury: input.injurySlug,
+      estimatedTotal: scenarios.expected.total,
+      sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+    })
+  }, [input.state, input.injurySlug, scenarios.expected.total])
 
   return (
     <main className="min-h-screen bg-[#f9fafb] py-10">
@@ -210,36 +203,38 @@ export default function ResultsContent() {
           </div>
         </div>
 
-        {/* Social proof + call buttons */}
-        <div className="mb-4 space-y-3">
-          <div className="flex items-center gap-2 justify-center py-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#059669] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#059669]" />
-            </span>
-            <p className="text-[12px] text-[#6b7280]">
-              <span className="font-medium text-[#111827]">{todayCount} workers</span> in {stateData?.name ?? 'your state'} used this calculator today
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <a
-              href="tel:+18005550199"
-              onClick={handleCallClick}
-              className="flex items-center justify-center gap-2 bg-[#111827] hover:bg-[#1f2937] text-white rounded-lg py-3 text-[13px] font-medium transition-colors"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5 19.79 19.79 0 010 2.88 2 2 0 012 .7h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.55a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+        {/* Social proof counter */}
+        <div className="flex items-center gap-2 bg-emerald-50 rounded-lg px-3 py-2 mb-4">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 flex-shrink-0 animate-pulse" />
+          <span className="text-xs text-emerald-800">
+            <strong>{todayCount} workers</strong>{' '}in {stateData?.name ?? 'your state'} used this calculator today
+          </span>
+        </div>
+
+        {/* Call + form buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <a
+            href="tel:+18005550199"
+            onClick={handleCallClick}
+            className="flex-1 flex flex-col items-center justify-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-lg text-sm font-semibold no-underline transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 015 15a19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
               </svg>
               Call now — free
-            </a>
-            <button
-              type="button"
-              onClick={scrollToForm}
-              className="flex items-center justify-center gap-1 bg-[#059669] hover:bg-[#047857] text-white rounded-lg py-3 text-[13px] font-medium transition-colors"
-            >
-              Get written report →
-            </button>
-          </div>
+            </span>
+            <span className="text-xs opacity-75 font-normal">Mon–Fri 8am–8pm · No obligation</span>
+          </a>
+          <span className="hidden sm:flex items-center text-xs text-gray-400">or</span>
+          <span className="flex sm:hidden items-center justify-center text-xs text-gray-400">or</span>
+          <button
+            type="button"
+            onClick={() => document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })}
+            className="flex-1 bg-white border border-emerald-600 text-emerald-600 hover:bg-emerald-50 px-5 py-3 rounded-lg text-sm font-medium cursor-pointer transition-colors"
+          >
+            Get written case report →
+          </button>
         </div>
 
         {/* Breakdown */}
@@ -363,23 +358,23 @@ export default function ResultsContent() {
         </div>
 
         {/* ── DIVIDER ──────────────────────────────────────────────────────── */}
-        <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-[#e5e7eb]" />
-          <span className="text-[11px] text-[#9ca3af] whitespace-nowrap">Your full case report is ready</span>
-          <div className="flex-1 h-px bg-[#e5e7eb]" />
+        <div className="flex items-center gap-3 my-2">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-gray-400 whitespace-nowrap">Your full case report is ready</span>
+          <div className="flex-1 h-px bg-gray-200" />
         </div>
 
         {/* ── PHASE 2: Blur Gate / Unlocked ──────────────────────────────── */}
         {!submitted ? (
 
-          <div id="lead-form" className="relative rounded-[12px] overflow-hidden mb-6">
+          <div id="lead-form" className="relative rounded-xl overflow-hidden my-4">
 
-            {/* Blurred content — background layer */}
-            <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5">
+            {/* Layer 1: blurred background content */}
+            <div className="bg-white border border-gray-200 rounded-xl p-4 pb-32">
               {([
                 {
                   title: `3 attorneys in ${stateData?.name ?? 'your state'} who handle ${injuryData?.name ?? 'your injury type'} cases`,
-                  sub: 'Direct contact info · Free consultation · No obligation',
+                  sub: 'Direct contact · Free consultation · No obligation',
                 },
                 {
                   title: `Your exact filing deadline — ${stateData?.name ?? 'your state'}`,
@@ -396,222 +391,186 @@ export default function ResultsContent() {
               ] as { title: string; sub: string }[]).map((item, i) => (
                 <div
                   key={i}
-                  className={`flex gap-[10px] py-3 ${i < 3 ? 'border-b border-[#f3f4f6]' : ''} ${i >= 2 ? 'hidden sm:flex' : ''}`}
+                  className={`flex items-start gap-3 py-3 ${i < 3 ? 'border-b border-gray-100' : ''}`}
                 >
-                  <svg
-                    width="16" height="16" viewBox="0 0 16 16" fill="none"
-                    className="shrink-0 mt-[2px] text-[#111827] opacity-25"
-                  >
-                    <rect x="3" y="7" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                    <path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="opacity-20 flex-shrink-0 mt-0.5">
+                    <rect x="3" y="7" width="10" height="8" rx="2" stroke="#111827" strokeWidth="1.5" />
+                    <path d="M5 7V5a3 3 0 016 0v2" stroke="#111827" strokeWidth="1.5" />
                   </svg>
-                  <div>
-                    <p
-                      className="text-[13px] font-medium text-[#111827] select-none pointer-events-none"
-                      style={{ filter: 'blur(4px)' }}
-                    >
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900 mb-0.5 select-none pointer-events-none" style={{ filter: 'blur(4px)' }}>
                       {item.title}
-                    </p>
-                    <p
-                      className="text-[11px] text-[#6b7280] select-none pointer-events-none mt-[3px]"
-                      style={{ filter: 'blur(3px)' }}
-                    >
+                    </div>
+                    <div className="text-xs text-gray-500 select-none pointer-events-none" style={{ filter: 'blur(3px)' }}>
                       {item.sub}
-                    </p>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Gradient overlay + Form card */}
+            {/* Layer 2: gradient overlay */}
             <div
-              className="absolute left-0 right-0 bottom-0 flex flex-col items-center justify-end px-5 pb-6 h-[85%] sm:h-[78%]"
+              className="absolute left-0 right-0 bottom-0 flex flex-col items-center justify-end px-3 pb-4 sm:px-4 sm:pb-5"
               style={{
-                background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.93) 30%, rgba(255,255,255,0.99) 60%, rgba(255,255,255,1) 100%)',
+                height: '85%',
+                background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.93) 22%, rgba(255,255,255,0.98) 45%, rgba(255,255,255,1) 65%)',
               }}
             >
-              <div className="bg-white border border-[#e5e7eb] rounded-[12px] w-full text-center p-4 sm:p-6">
-
+              {/* Layer 3: form card */}
+              <div
+                className="w-full bg-white border border-gray-200 rounded-xl p-4 sm:p-5"
+                style={{ boxShadow: '0 2px 20px rgba(0,0,0,0.07)' }}
+              >
                 {/* Badge */}
-                <div className="inline-flex items-center gap-[6px] bg-[#f3f4f6] rounded-[20px] px-3 py-1 mb-3">
-                  <div className="w-[6px] h-[6px] rounded-full bg-[#9ca3af]" />
-                  <span className="text-[11px] text-[#6b7280]">Free case report — unlock instantly</span>
+                <div className="flex justify-center mb-3">
+                  <span className="inline-flex items-center gap-1.5 bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-500">
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block" />
+                    Free case report — unlock instantly
+                  </span>
                 </div>
 
-                <h3 className="text-[15px] font-semibold text-[#111827] mb-1">Get your full case report</h3>
-                <p className="text-[12px] text-[#6b7280] leading-[1.5] mb-4">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-900 text-center mb-1">
+                  Get your full case report
+                </h3>
+                <p className="text-xs text-gray-500 text-center leading-relaxed mb-3">
                   Attorney contacts, your exact deadline, and a step-by-step claim guide.
                 </p>
 
                 {/* Unlock items */}
-                <div className="flex flex-col gap-[6px] mb-4 text-left">
+                <div className="flex flex-col gap-1.5 mb-4">
                   {[
                     `Attorneys in ${stateData?.name ?? 'your state'} for ${injuryData?.name ?? 'your injury'}`,
                     'Your exact filing deadline',
-                    'First call guide + settlement red flags',
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <div className="w-[14px] h-[14px] rounded-full bg-[#d1fae5] flex items-center justify-center shrink-0 text-[8px] text-[#065f46]">✓</div>
-                      <span className="text-[12px] text-[#374151]">{item}</span>
+                    'First call guide + red flags',
+                  ].map((text, i) => (
+                    <div key={i} className="flex items-center gap-2 text-xs text-gray-700">
+                      <div
+                        className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-800 font-semibold"
+                        style={{ fontSize: '9px' }}
+                      >✓</div>
+                      {text}
                     </div>
                   ))}
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleFormSubmit} className="flex flex-col gap-2 mb-[10px]">
+                {/* Form fields */}
+                <div className="flex flex-col gap-2 mb-2">
                   <div>
                     <input
-                      type="text" required value={name}
-                      onChange={e => { const v = sanitizeName(e.target.value); setName(v); if (nameError) setNameError('') }}
-                      onBlur={() => { if (name && !validateName(name)) setNameError('Enter your full name (letters only)') }}
-                      placeholder="Your full name"
-                      className={`${inputCls} ${nameError ? 'border-[#dc2626]' : ''}`}
+                      type="text"
+                      placeholder="Full name (letters only)"
+                      value={name}
+                      onChange={e => { setName(sanitizeName(e.target.value)); if (nameError) setNameError('') }}
+                      onBlur={() => { if (name && !validateName(name)) setNameError('Please enter your name in English letters only') }}
+                      onFocus={() => setNameError('')}
+                      className={`w-full px-3 py-2.5 rounded-lg text-sm text-gray-900 outline-none transition-colors focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 ${nameError ? 'border border-red-400' : 'border border-gray-200'}`}
                     />
-                    {nameError && <p className="text-[#dc2626] text-[10px] text-left mt-1">{nameError}</p>}
+                    {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
                   </div>
                   <div>
                     <input
-                      type="email" required value={email}
-                      onChange={e => { setEmail(e.target.value); if (emailError) setEmailError('') }}
-                      onBlur={() => { if (email && !validateEmail(email)) setEmailError('Enter a valid email address') }}
+                      type="email"
                       placeholder="Email address"
-                      className={`${inputCls} ${emailError ? 'border-[#dc2626]' : ''}`}
+                      value={email}
+                      onChange={e => { setEmail(e.target.value); if (emailError) setEmailError('') }}
+                      onBlur={() => { if (email && !validateEmail(email)) setEmailError('Please enter a valid email address') }}
+                      onFocus={() => setEmailError('')}
+                      className={`w-full px-3 py-2.5 rounded-lg text-sm text-gray-900 outline-none transition-colors focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 ${emailError ? 'border border-red-400' : 'border border-gray-200'}`}
                     />
-                    {emailError && <p className="text-[#dc2626] text-[10px] text-left mt-1">{emailError}</p>}
+                    {emailError && <p className="text-xs text-red-500 mt-1">{emailError}</p>}
                   </div>
                   <div>
                     <input
                       type="tel"
+                      placeholder="(555) 555-5555"
                       value={formatPhone(phone)}
-                      onChange={e => { const v = sanitizePhone(e.target.value); setPhone(v); if (phoneError) setPhoneError('') }}
-                      onBlur={() => { if (phone && !validatePhone(phone)) setPhoneError('Enter a 10-digit phone number') }}
-                      placeholder="Phone number"
-                      className={`${inputCls} ${phoneError ? 'border-[#dc2626]' : ''}`}
+                      onChange={e => { setPhone(sanitizePhone(e.target.value)); if (phoneError) setPhoneError('') }}
+                      onBlur={() => { if (phone && !validatePhone(phone)) setPhoneError('Please enter a valid 10-digit US phone number') }}
+                      onFocus={() => setPhoneError('')}
+                      className={`w-full px-3 py-2.5 rounded-lg text-sm text-gray-900 outline-none transition-colors focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 ${phoneError ? 'border border-red-400' : 'border border-gray-200'}`}
                     />
-                    {phoneError && <p className="text-[#dc2626] text-[10px] text-left mt-1">{phoneError}</p>}
+                    {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
                   </div>
-                  <div className="flex gap-2 items-start text-left mt-1">
-                    <input
-                      type="checkbox" id="gate-consent" checked={consent}
-                      onChange={e => setConsent(e.target.checked)}
-                      className="mt-[2px] shrink-0 accent-[#059669]"
-                    />
-                    <label htmlFor="gate-consent" className="text-[10px] text-[#9ca3af] leading-[1.5] cursor-pointer">
-                      By submitting, I agree to be contacted by a licensed workers&apos; comp attorney regarding my
-                      claim. WorkerRight may receive a referral fee. This is free to me.
-                    </label>
-                  </div>
-                  {formError && <p className="text-[#dc2626] text-xs text-left">{formError}</p>}
-                  <button
-                    type="submit"
-                    disabled={!isFormValid(name, phone, email, consent) || submitting}
-                    className="w-full bg-[#059669] hover:bg-[#047857] disabled:bg-[#e5e7eb] disabled:text-[#9ca3af] text-white border-none rounded-lg py-[13px] text-[14px] font-medium cursor-pointer transition-colors mt-1"
-                  >
-                    {submitting ? 'Submitting…' : 'Get my free case report →'}
-                  </button>
-                </form>
+                </div>
 
-                <p className="text-[11px] text-[#9ca3af] text-center">
+                {/* Consent */}
+                <label className="flex gap-2 items-start mb-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={e => setConsent(e.target.checked)}
+                    className="mt-0.5 flex-shrink-0 accent-emerald-600"
+                  />
+                  <span className="text-xs text-gray-400 leading-relaxed">
+                    By submitting, I agree to be contacted by a licensed workers&apos; comp attorney
+                    regarding my claim. WorkerRight may receive a referral fee. This is free to me.
+                  </span>
+                </label>
+
+                {formError && <p className="text-xs text-red-500 mb-2">{formError}</p>}
+
+                {/* Submit */}
+                <button
+                  onClick={handleSubmit}
+                  disabled={!isFormValid(name, phone, email, consent) || submitting}
+                  className={`w-full py-3 rounded-lg text-sm font-medium text-white border-none transition-all ${isFormValid(name, phone, email, consent) && !submitting ? 'bg-emerald-600 hover:bg-emerald-700 cursor-pointer' : 'bg-gray-300 cursor-not-allowed opacity-60'}`}
+                >
+                  {submitting ? 'Submitting...' : 'Get my free case report →'}
+                </button>
+
+                <p className="text-xs text-gray-400 text-center mt-2">
                   No spam · One contact from a licensed attorney · That&apos;s it
                 </p>
-
               </div>
             </div>
           </div>
 
         ) : (
 
-          <>
-            {/* Thank you */}
-            <div className="border border-[#e5e7eb] rounded-[12px] p-8 text-center mb-5">
-              <svg className="w-12 h-12 mx-auto mb-4" viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="24" fill="#d1fae5" />
-                <path d="M14 24l7 7 13-13" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <h3 className="text-[20px] font-semibold text-[#111827] mb-2">Your case report is ready</h3>
-              <p className="text-[14px] text-[#6b7280] leading-relaxed">
-                A workers&apos; comp specialist in {stateData?.name ?? 'your state'} will contact you
-                within 24 hours. No obligation.
-              </p>
+          <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 text-center my-4">
+            {/* Check icon */}
+            <div className="flex justify-center mb-4">
+              <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
             </div>
-
-            {/* Unlocked content */}
-            <div className="space-y-4 mb-6">
-
-              {/* Attorney placeholder */}
-              <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5">
-                <p className="text-[13px] font-semibold text-[#111827] mb-3">
-                  Workers&apos; comp attorneys in {stateData?.name ?? 'your state'} who handle{' '}
-                  {injuryData?.name ?? 'your injury type'} cases:
-                </p>
-                <div className="bg-[#f9fafb] rounded-lg p-[14px]">
-                  <p className="text-[13px] font-medium text-[#111827]">A specialist will contact you</p>
-                  <p className="text-[11px] text-[#6b7280] mt-0.5">
-                    Licensed workers&apos; comp attorney · {stateData?.name ?? 'your state'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Filing deadline */}
-              <div
-                className="rounded-lg p-[14px]"
-                style={{ background: input.claimStatus === 'not-filed' ? '#fef2f2' : '#f0fdf4' }}
-              >
-                <p className="text-[13px] font-medium text-[#111827]">
-                  Based on {stateData?.name ?? 'state'} law
-                  {stateData?.statute ? ` (${stateData.statute})` : ''}, you have{' '}
-                  <span style={{ color: input.claimStatus === 'not-filed' ? '#dc2626' : '#059669' }}>
-                    {filingDeadline.sol}
-                  </span>{' '}
-                  from the date of injury.
-                </p>
-              </div>
-
-              {/* First call guide */}
-              <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5">
-                <p className="text-[13px] font-semibold text-[#111827] mb-3">Your first attorney call</p>
-                <div className="grid grid-cols-2 gap-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Your case report is ready</h3>
+            <p className="text-sm text-gray-500 leading-relaxed mb-6">
+              A workers&apos; comp specialist in {stateData?.name ?? 'your state'} will contact you
+              within 24 hours. No obligation.
+            </p>
+            {/* Unlocked items */}
+            <div className="text-left space-y-3">
+              {[
+                {
+                  icon: '📋',
+                  title: 'Your filing deadline',
+                  body: `Based on ${stateData?.name ?? 'state'} law${stateData?.statute ? ` (${stateData.statute})` : ''}, you have ${filingDeadline.sol} from the date of injury.`,
+                },
+                {
+                  icon: '📞',
+                  title: 'First call guide',
+                  body: "DO: Report exact injury date. DON'T: Sign anything without attorney review.",
+                },
+                {
+                  icon: '⚠️',
+                  title: 'Settlement red flags',
+                  body: '"Full and final" release language. Pressure before MMI. Medical-only offers.',
+                },
+              ].map((item, i) => (
+                <div key={i} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
+                  <span className="text-base flex-shrink-0">{item.icon}</span>
                   <div>
-                    <p className="text-[11px] font-semibold text-[#065f46] mb-2">DO</p>
-                    <div className="space-y-2">
-                      {['Report your exact injury date', 'Describe all symptoms', 'Ask about the timeline'].map((item, i) => (
-                        <div key={i} className="flex items-start gap-1.5 text-[12px] text-[#374151]">
-                          <span className="text-[#065f46] shrink-0 mt-0.5">✓</span>{item}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-semibold text-[#991b1b] mb-2">DON&apos;T</p>
-                    <div className="space-y-2">
-                      {['Sign anything without review', 'Give recorded statements', 'Accept first offer immediately'].map((item, i) => (
-                        <div key={i} className="flex items-start gap-1.5 text-[12px] text-[#374151]">
-                          <span className="text-[#dc2626] shrink-0 mt-0.5">✕</span>{item}
-                        </div>
-                      ))}
-                    </div>
+                    <div className="text-sm font-medium text-gray-900 mb-0.5">{item.title}</div>
+                    <div className="text-xs text-gray-600 leading-relaxed">{item.body}</div>
                   </div>
                 </div>
-              </div>
-
-              {/* Red flags */}
-              <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5">
-                <p className="text-[13px] font-semibold text-[#111827] mb-3">Red flags in settlement offers</p>
-                <div className="space-y-2">
-                  {[
-                    '"Full and final" release language',
-                    'Pressure to settle before MMI',
-                    'Medical-only settlement (no wage loss)',
-                  ].map((f, i) => (
-                    <div key={i} className="flex items-start gap-2 text-[12px] text-[#374151]">
-                      <span className="text-[#dc2626] shrink-0 mt-0.5">⚠</span>{f}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+              ))}
             </div>
-          </>
+          </div>
 
         )}
 
@@ -663,24 +622,23 @@ export default function ResultsContent() {
 
       {/* Mobile sticky bar */}
       {showSticky && !submitted && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-[#e5e7eb] px-4 py-3 flex gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+        <div
+          className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 sm:hidden"
+          style={{ boxShadow: '0 -4px 16px rgba(0,0,0,0.08)' }}
+        >
           <a
             href="tel:+18005550199"
             onClick={handleCallClick}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-[#111827] text-white rounded-lg py-3 text-[13px] font-medium"
+            className="flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-lg text-sm font-semibold no-underline transition-colors"
           >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5 19.79 19.79 0 010 2.88 2 2 0 012 .7h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.55a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 015 15a19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
             </svg>
-            Call free
+            Call now — free consultation
           </a>
-          <button
-            type="button"
-            onClick={scrollToForm}
-            className="flex-1 bg-[#059669] text-white rounded-lg py-3 text-[13px] font-medium"
-          >
-            Get report →
-          </button>
+          <p className="text-xs text-gray-400 text-center mt-1.5">
+            Free · No obligation · Mon–Fri 8am–8pm
+          </p>
         </div>
       )}
 
