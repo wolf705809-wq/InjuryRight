@@ -21,12 +21,9 @@ export default function HomePage() {
       {/* Hero */}
       <section className="bg-white py-16 px-8">
         <div className="max-w-2xl mx-auto text-center">
-          <h1
-            className="font-bold leading-tight mb-5"
-            style={{ fontSize: 'clamp(28px, 5vw, 48px)', lineHeight: 1.2 }}
-          >
+          <h1 className="font-bold leading-[1.2] mb-5 text-[clamp(28px,5vw,48px)]">
             <span className="text-gray-900 block">You got hurt at work.</span>
-            <span style={{ color: '#059669' }} className="block">Your employer already has a lawyer.</span>
+            <span className="text-emerald-600 block">Your employer already has a lawyer.</span>
           </h1>
 
           <p className="text-[15px] text-gray-500 leading-[1.7] mb-2 max-w-[480px] mx-auto">
@@ -41,34 +38,26 @@ export default function HomePage() {
             Calculate what I&apos;m owed →
           </Link>
 
-          <p className="text-[12px]" style={{ color: '#9ca3af' }}>
+          <p className="text-[12px] text-gray-400">
             47 states covered · No win, no fee · Free forever
           </p>
 
-          <p className="text-[11px] mt-3" style={{ color: '#9ca3af' }}>
+          <p className="text-[11px] mt-3 text-gray-400">
             * Source: NCCI Workers Compensation Statistical Data 2023
           </p>
         </div>
 
         {/* Mission box */}
-        <div
-          className="max-w-[640px] mx-auto mt-8"
-          style={{
-            background: '#f9fafb',
-            borderLeft: '3px solid #059669',
-            borderRadius: '0 8px 8px 0',
-            padding: '24px 28px',
-          }}
-        >
-          <p className="text-[15px] leading-[1.8]" style={{ color: '#374151' }}>
+        <div className="max-w-[640px] mx-auto mt-8 bg-gray-50 border-l-[3px] border-emerald-600 rounded-r-lg py-6 px-7">
+          <p className="text-[15px] leading-[1.8] text-gray-700">
             When you&apos;re injured at work, the clock starts immediately. Your employer notifies their insurer.
             The insurer assigns an adjuster — someone whose performance is measured by how much they save the company
             on claims.
           </p>
-          <p className="text-[15px] leading-[1.8] mt-4 font-semibold" style={{ color: '#111827' }}>
+          <p className="text-[15px] leading-[1.8] mt-4 font-semibold text-gray-900">
             You&apos;re expected to navigate this alone.
           </p>
-          <p className="text-[15px] leading-[1.8] mt-4" style={{ color: '#374151' }}>
+          <p className="text-[15px] leading-[1.8] mt-4 text-gray-700">
             We built WorkInjuryCalc because that&apos;s not fair. The formulas exist. The law is public.
             We made it accessible — free, in 2 minutes, before you&apos;ve spoken to anyone.
           </p>
@@ -78,7 +67,7 @@ export default function HomePage() {
       <TrustBar />
 
       {/* By the numbers */}
-      <section className="py-14 px-8" style={{ background: '#111827' }}>
+      <section className="py-14 px-8 bg-gray-900">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-xl font-semibold text-white text-center mb-10">By the numbers</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">

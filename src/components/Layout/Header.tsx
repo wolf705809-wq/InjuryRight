@@ -8,7 +8,7 @@ export default function Header() {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" style={{ letterSpacing: '-0.3px' }} className="flex items-center">
+        <Link href="/" className="flex items-center tracking-[-0.3px]">
           <span className="text-xl font-semibold text-gray-900">WorkInjury</span>
           <span className="text-xl font-semibold text-emerald-600">Calc</span>
         </Link>
