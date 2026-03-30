@@ -1,121 +1,83 @@
 import Link from 'next/link'
 import TrustBar from '@/components/Layout/TrustBar'
-import CalculatorForm from '@/components/Calculator/CalculatorForm'
 import { US_STATES, INDUSTRIES } from '@/lib/pseo-data'
 
 const CASES = [
-  { tag: 'Back injury',  desc: 'Warehouse worker, forklift accident, L4-L5 herniation',     amount: '$68,400',  meta: 'California · 2024' },
-  { tag: 'Amputation',   desc: 'Manufacturing worker, press machine, finger amputation',      amount: '$142,000', meta: 'Illinois · 2024' },
-  { tag: 'TBI',          desc: 'Construction worker, fall from scaffold, traumatic brain injury', amount: '$215,000', meta: 'Texas · 2023' },
+  { tag: 'Back injury',  desc: 'Warehouse worker, forklift accident, L4-L5 herniation',          amount: '$68,400',  meta: 'California · 2024' },
+  { tag: 'Amputation',   desc: 'Manufacturing worker, press machine, finger amputation',           amount: '$142,000', meta: 'Illinois · 2024' },
+  { tag: 'TBI',          desc: 'Construction worker, fall from scaffold, traumatic brain injury',  amount: '$215,000', meta: 'Texas · 2023' },
 ]
 
 const BY_THE_NUMBERS = [
   { v: '$1.2B', l: "Total workers' comp paid in CA (2023)" },
   { v: '2.6M',  l: 'Work injury claims filed annually (US)' },
-  { v: '68%',   l: 'Workers who hire attorneys get higher settlements' },
+  { v: '2.4×',  l: 'More compensation with an attorney (avg)' },
   { v: '1 yr',  l: 'Average time to settlement with attorney' },
 ]
 
 export default function HomePage() {
   return (
     <main>
-      {/* Split Hero */}
+      {/* Hero */}
       <section className="bg-white py-16 px-8">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          {/* Left: Text */}
-          <div>
-            <p className="text-[12px] text-gray-500 mb-5">Workers&apos; Compensation · 47 States</p>
-            <h1
-              className="font-bold text-gray-900 leading-tight mb-5"
-              style={{ fontSize: 'clamp(28px, 4vw, 42px)', letterSpacing: '-0.8px' }}
-            >
-              Find out what your work injury claim is worth.
-            </h1>
-            <p className="text-base text-gray-500 leading-[1.7] mb-7 max-w-[440px]">
-              State-specific calculator based on actual workers&apos; comp law.
-              Reviewed by licensed attorneys.
-            </p>
-            <Link
-              href="/calculator"
-              className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-[15px] font-medium px-7 py-[14px] rounded-lg transition-colors"
-            >
-              Calculate my compensation →
-            </Link>
-            <p className="text-[12px] text-gray-400 mt-3">Free · No obligation · Results in 90 seconds</p>
-          </div>
+        <div className="max-w-2xl mx-auto text-center">
+          <h1
+            className="font-bold leading-tight mb-5"
+            style={{ fontSize: 'clamp(28px, 5vw, 48px)', lineHeight: 1.2 }}
+          >
+            <span className="text-gray-900 block">You got hurt at work.</span>
+            <span style={{ color: '#059669' }} className="block">Your employer already has a lawyer.</span>
+          </h1>
 
-          {/* Right: Data Cards */}
-          <div className="flex flex-col gap-4">
-            <div className="border border-gray-200 rounded-xl p-5" style={{ borderLeft: '3px solid #059669' }}>
-              <p className="text-[12px] text-gray-500 mb-1">Average Settlement</p>
-              <p className="text-[28px] font-bold text-gray-900 leading-none">$42,000</p>
-              <p className="text-[12px] text-gray-400 mt-1.5">Across all 47 states (2024)</p>
-            </div>
-            <div className="border border-gray-200 rounded-xl p-5" style={{ borderLeft: '3px solid #059669' }}>
-              <p className="text-[12px] text-gray-500 mb-1">Top State Payout</p>
-              <p className="text-[28px] font-bold text-gray-900 leading-none">$95,000</p>
-              <p className="text-[12px] text-gray-400 mt-1.5">California — highest avg. settlement</p>
-            </div>
-            <div className="border border-gray-200 rounded-xl p-5">
-              <p className="text-[12px] text-gray-500 mb-1">Claim Deadline</p>
-              <p className="text-[28px] font-bold text-red-600 leading-none">1–3 yrs</p>
-              <p className="text-[12px] text-gray-400 mt-1.5">Varies by state — check yours now</p>
-            </div>
-          </div>
+          <p className="text-[15px] text-gray-500 leading-[1.7] mb-2 max-w-[480px] mx-auto">
+            Injured workers with attorneys receive 2.4× more compensation on average.*{' '}
+            Know your number before they make you an offer.
+          </p>
+
+          <Link
+            href="/calculator"
+            className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white text-[15px] font-medium px-7 py-[14px] rounded-lg transition-all hover:scale-[1.01] mt-4 mb-3"
+          >
+            Calculate what I&apos;m owed →
+          </Link>
+
+          <p className="text-[12px]" style={{ color: '#9ca3af' }}>
+            47 states covered · No win, no fee · Free forever
+          </p>
+
+          <p className="text-[11px] mt-3" style={{ color: '#9ca3af' }}>
+            * Source: NCCI Workers Compensation Statistical Data 2023
+          </p>
+        </div>
+
+        {/* Mission box */}
+        <div
+          className="max-w-[640px] mx-auto mt-8"
+          style={{
+            background: '#f9fafb',
+            borderLeft: '3px solid #059669',
+            borderRadius: '0 8px 8px 0',
+            padding: '24px 28px',
+          }}
+        >
+          <p className="text-[15px] leading-[1.8]" style={{ color: '#374151' }}>
+            When you&apos;re injured at work, the clock starts immediately. Your employer notifies their insurer.
+            The insurer assigns an adjuster — someone whose performance is measured by how much they save the company
+            on claims.
+          </p>
+          <p className="text-[15px] leading-[1.8] mt-4 font-semibold" style={{ color: '#111827' }}>
+            You&apos;re expected to navigate this alone.
+          </p>
+          <p className="text-[15px] leading-[1.8] mt-4" style={{ color: '#374151' }}>
+            We built WorkInjuryCalc because that&apos;s not fair. The formulas exist. The law is public.
+            We made it accessible — free, in 2 minutes, before you&apos;ve spoken to anyone.
+          </p>
         </div>
       </section>
 
       <TrustBar />
 
-      {/* Calculator — Split Layout */}
-      <section className="bg-gray-50 py-12 px-8">
-        <div className="max-w-5xl mx-auto">
-          <p className="text-[11px] font-medium text-emerald-600 tracking-[0.08em] uppercase text-center mb-2">Free Workers&apos; Comp Calculator</p>
-          <h2 className="text-2xl font-semibold text-gray-900 text-center mb-8">What&apos;s your case worth?</h2>
-          <div className="grid md:grid-cols-2 gap-8 items-start">
-            {/* Left: Form */}
-            <div className="bg-white border border-gray-200 rounded-xl p-7">
-              <CalculatorForm />
-            </div>
-            {/* Right: Blurred Preview */}
-            <div className="bg-white border border-gray-200 rounded-xl p-7 relative overflow-hidden hidden md:block">
-              <div className="blur-sm select-none pointer-events-none">
-                <p className="text-[11px] text-gray-500 mb-2">Your estimated range</p>
-                <p className="text-4xl font-bold text-gray-900 font-mono">$── ── ──</p>
-                <div className="mt-5 space-y-3">
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-sm text-gray-500">TTD Benefits</span>
-                    <span className="text-sm font-semibold text-gray-900">$──,───</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-sm text-gray-500">PPD Benefits</span>
-                    <span className="text-sm font-semibold text-gray-900">$──,───</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-sm text-gray-500">Medical Costs</span>
-                    <span className="text-sm font-semibold text-gray-900">$──,───</span>
-                  </div>
-                </div>
-                <div className="mt-5 h-2 bg-gray-200 rounded-full w-full">
-                  <div className="h-2 bg-emerald-600 rounded-full w-2/3"></div>
-                </div>
-              </div>
-              {/* Overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/70">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                <p className="text-sm text-gray-500 mt-3 text-center max-w-[160px] leading-relaxed">
-                  Complete the calculator to see your estimate
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* By the numbers — Dark Section */}
+      {/* By the numbers */}
       <section className="py-14 px-8" style={{ background: '#111827' }}>
         <div className="max-w-5xl mx-auto">
           <h2 className="text-xl font-semibold text-white text-center mb-10">By the numbers</h2>
