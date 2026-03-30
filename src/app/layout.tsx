@@ -7,6 +7,7 @@ import Footer from '@/components/Layout/Footer'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://getfairclaimpro.com'),
   title: {
     default: "WorkerRight — Know Your Rights. Get What You're Owed.",
     template: '%s | WorkerRight',
@@ -19,6 +20,14 @@ export const metadata: Metadata = {
     description:
       "Free state-specific calculators for workers' comp and wrongful termination claims.",
     type: 'website',
+    images: [
+      {
+        url: '/og-default.png',
+        width: 1200,
+        height: 630,
+        alt: 'WorkerRight — Workers Comp Settlement Calculator',
+      },
+    ],
   },
 }
 

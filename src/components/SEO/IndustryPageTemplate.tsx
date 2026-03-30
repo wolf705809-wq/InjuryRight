@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { USState, Industry, InjuryType } from '@/types'
 import CalculatorForm from '@/components/Calculator/CalculatorForm'
+import TrustBadge from '@/components/SEO/TrustBadge'
 
 interface Props {
   state: USState
@@ -21,9 +22,10 @@ export default function IndustryPageTemplate({ state, industry, injuries }: Prop
               <span className="text-emerald-600">●</span>
               {state.name} · {industry.name}
             </span>
-            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4" style={{ letterSpacing: '-0.4px' }}>
-              {industry.name} Workers' Comp in {state.name}
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-3" style={{ letterSpacing: '-0.4px' }}>
+              {industry.name} Workers&apos; Comp in {state.name}
             </h1>
+            <TrustBadge state={state.abbr} />
             <p className="text-gray-500 text-base leading-relaxed mb-6">
               {industry.name} is a <strong className="text-gray-900">{industry.riskLevel.replace('-', ' ')} risk</strong> industry.
               Workers in {state.name} typically receive ${state.avgSettlement.low.toLocaleString()}–${state.avgSettlement.high.toLocaleString()}.
@@ -46,7 +48,7 @@ export default function IndustryPageTemplate({ state, industry, injuries }: Prop
             {commonInjuries.map(inj => (
               <Link key={inj.slug} href={`/${state.slug}/${industry.slug}/${inj.slug}`}
                 className="border border-emerald-200 bg-emerald-50/50 hover:border-emerald-500 rounded-xl p-4 transition-colors group">
-                <p className="text-sm font-medium text-gray-900 group-hover:text-emerald-700">{inj.name}</p>
+                <p className="text-sm font-medium text-gray-900 group-hover:text-emerald-700">{inj.name} workers&apos; comp settlements in {state.name}</p>
                 <p className="text-[11px] text-gray-500 mt-1">Avg medical cost: ${inj.avgMedicalCost.toLocaleString()} · Avg impairment: {inj.avgImpairmentRating}%</p>
               </Link>
             ))}
@@ -71,9 +73,9 @@ export default function IndustryPageTemplate({ state, industry, injuries }: Prop
         <nav className="max-w-5xl mx-auto text-xs text-gray-400 flex gap-2">
           <Link href="/" className="hover:text-gray-600">Home</Link>
           <span>/</span>
-          <Link href={`/${state.slug}`} className="hover:text-gray-600">{state.name}</Link>
+          <Link href={`/${state.slug}`} className="hover:text-gray-600">{state.name} workers&apos; comp settlements</Link>
           <span>/</span>
-          <span>{industry.name}</span>
+          <span>{state.name} {industry.name} workers&apos; comp settlements</span>
         </nav>
       </div>
     </main>

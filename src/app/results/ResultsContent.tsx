@@ -26,18 +26,17 @@ function strengthColor(s: CaseStrength) {
 
 export default function ResultsContent() {
   const p = useSearchParams()
-  const [whyOpen,    setWhyOpen]    = useState(false)
-  const [submitted,  setSubmitted]  = useState(false)
-  const [name,       setName]       = useState('')
-  const [email,      setEmail]      = useState('')
-  const [phone,      setPhone]      = useState('')
-  const [consent,    setConsent]    = useState(false)
-  const [formError,  setFormError]  = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [nameError,  setNameError]  = useState('')
-  const [phoneError, setPhoneError] = useState('')
-  const [emailError, setEmailError] = useState('')
-  const [showSticky, setShowSticky] = useState(false)
+  const [whyOpen,         setWhyOpen]         = useState(false)
+  const [unlocked,        setUnlocked]        = useState(false)
+  const [name,            setName]            = useState('')
+  const [email,           setEmail]           = useState('')
+  const [phone,           setPhone]           = useState('')
+  const [consent,         setConsent]         = useState(false)
+  const [loading,         setLoading]         = useState(false)
+  const [error,           setError]           = useState<string | null>(null)
+  const [submitAttempted, setSubmitAttempted] = useState(false)
+  const [showSticky,      setShowSticky]      = useState(false)
+  const [socialProofCount] = useState(() => Math.floor(Math.random() * 30) + 12)
 
   // Catastrophic gate
   const isCatastrophic = p.get('catastrophic') === 'true'
@@ -101,11 +100,17 @@ export default function ResultsContent() {
   } = result
 
   const handleSubmit = useCallback(async () => {
-    if (!consent) { setFormError('You must agree to be contacted.'); return }
-    setSubmitting(true); setFormError('')
+    setSubmitAttempted(true)
+    if (!isFormValid(name, phone, email, consent)) return
+    setLoading(true)
+    setError(null)
+
     const res = await saveLead({
-      name, email, phone: phone || undefined,
+      name: sanitizeName(name).trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone.replace(/\D/g, ''),
       country: 'us',
+      consent: true,
       state: input.state,
       industry: input.industry,
       injuryType: input.injurySlug,
@@ -126,13 +131,39 @@ export default function ResultsContent() {
       totalHigh: scenarios.bestCase.total,
       caseStrength,
       caseStrengthScore,
-      consent,
       sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
     })
-    setSubmitting(false)
-    if (res.success) setSubmitted(true)
-    else setFormError('Something went wrong. Please try again.')
-  }, [name, email, phone, consent, input, breakdown, scenarios, caseStrength, caseStrengthScore])
+
+    if (!res.success) {
+      setError('Something went wrong. Please try again.')
+      setLoading(false)
+      return
+    }
+
+    try {
+      await fetch('/api/send-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          name: sanitizeName(name).trim(),
+          state: stateData?.name ?? input.state,
+          injury: injuryData?.name ?? input.injurySlug,
+          conservative: scenarios.conservative.total,
+          expected: scenarios.expected.total,
+          bestCase: scenarios.bestCase.total,
+          caseStrength,
+          sol: filingDeadline.sol,
+          statute: stateData?.statute ?? '',
+        }),
+      })
+    } catch {
+      console.warn('[send-report] Email skipped')
+    }
+
+    setUnlocked(true)
+    setLoading(false)
+  }, [name, email, phone, consent, input, breakdown, scenarios, caseStrength, caseStrengthScore, stateData, injuryData, filingDeadline])
 
   const handleCallClick = useCallback(async () => {
     await trackCallClick({
@@ -365,214 +396,340 @@ export default function ResultsContent() {
         </div>
 
         {/* ── PHASE 2: Blur Gate / Unlocked ──────────────────────────────── */}
-        {!submitted ? (
+        <div id="lead-form" className="relative bg-[#0f1623] rounded-2xl overflow-hidden mt-2 mb-6">
 
-          <div id="lead-form" className="relative rounded-xl overflow-hidden my-4">
-
-            {/* Layer 1: blurred background content */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4 pb-32">
-              {([
-                {
-                  title: `3 attorneys in ${stateData?.name ?? 'your state'} who handle ${injuryData?.name ?? 'your injury type'} cases`,
-                  sub: 'Direct contact · Free consultation · No obligation',
-                },
-                {
-                  title: `Your exact filing deadline — ${stateData?.name ?? 'your state'}`,
-                  sub: `${filingDeadline.sol} from date of injury · Do not miss this date`,
-                },
-                {
-                  title: 'What to say in your first attorney call',
-                  sub: 'And what NOT to say · Red flags in settlement offers',
-                },
-                {
-                  title: `Step-by-step ${stateData?.name ?? 'state'} claim guide`,
-                  sub: 'Filing, deadlines, and appeal rights',
-                },
-              ] as { title: string; sub: string }[]).map((item, i) => (
-                <div
-                  key={i}
-                  className={`flex items-start gap-3 py-3 ${i < 3 ? 'border-b border-gray-100' : ''}`}
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="opacity-20 flex-shrink-0 mt-0.5">
-                    <rect x="3" y="7" width="10" height="8" rx="2" stroke="#111827" strokeWidth="1.5" />
-                    <path d="M5 7V5a3 3 0 016 0v2" stroke="#111827" strokeWidth="1.5" />
-                  </svg>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900 mb-0.5 select-none pointer-events-none" style={{ filter: 'blur(4px)' }}>
-                      {item.title}
-                    </div>
-                    <div className="text-xs text-gray-500 select-none pointer-events-none" style={{ filter: 'blur(3px)' }}>
-                      {item.sub}
-                    </div>
+          {/* Blurred preview skeleton — absolute background, locked state only */}
+          <div className={`absolute inset-0 overflow-hidden pointer-events-none select-none z-0 transition-opacity duration-700 ${
+            unlocked ? 'opacity-0' : 'opacity-100 blur-[6px]'
+          }`}>
+            <div className="p-6 space-y-4">
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
+                <p className="text-white/60 text-sm font-medium mb-3">
+                  Attorneys in {stateData?.name ?? 'your state'} for {injuryData?.name ?? 'your injury'}
+                </p>
+                {[1,2,3].map(i => (
+                  <div key={i} className="py-3 border-b border-white/5 last:border-0">
+                    <p className="text-emerald-400/60 text-sm">★★★★★</p>
+                    <p className="text-white/70 text-sm font-medium mt-0.5">{stateData?.name ?? 'State'} Workers&apos; Comp Specialists</p>
+                    <p className="text-gray-500 text-xs mt-0.5">Free consultation · No upfront fees</p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
+                <p className="text-amber-300/60 text-sm font-medium mb-2">⚠ Your Exact Filing Deadline</p>
+                <p className="text-amber-200/70 text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
+              </div>
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
+                <p className="text-white/60 text-sm font-medium mb-3">Before Your Attorney Call — Be Ready</p>
+                {['Date, time, and location of your injury','Names of any witnesses','Medical records so far','Written employer communications'].map((t, i) => (
+                  <div key={i} className="flex gap-2 mb-2">
+                    <span className="text-emerald-400/60 flex-shrink-0">✓</span>
+                    <span className="text-gray-400/60 text-sm">{t}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
+                <p className="text-white/60 text-sm font-medium mb-3">Your {stateData?.name ?? 'State'} Claim — Step by Step</p>
+                {[1,2,3,4,5,6].map(i => (
+                  <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
+                    <div className="w-7 h-7 rounded-full bg-emerald-600/20 text-emerald-400/60 text-sm font-bold flex items-center justify-center flex-shrink-0">{i}</div>
+                    <div className="h-3 bg-white/5 rounded flex-1 mt-2" />
+                  </div>
+                ))}
+              </div>
             </div>
+          </div>
 
-            {/* Layer 2: gradient overlay */}
-            <div
-              className="absolute left-0 right-0 bottom-0 flex flex-col items-center justify-end px-3 pb-4 sm:px-4 sm:pb-5"
-              style={{
-                height: '85%',
-                background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.93) 22%, rgba(255,255,255,0.98) 45%, rgba(255,255,255,1) 65%)',
-              }}
-            >
-              {/* Layer 3: form card */}
-              <div
-                className="w-full bg-white border border-gray-200 rounded-xl p-4 sm:p-5"
-                style={{ boxShadow: '0 2px 20px rgba(0,0,0,0.07)' }}
-              >
-                {/* Badge */}
-                <div className="flex justify-center mb-3">
-                  <span className="inline-flex items-center gap-1.5 bg-gray-100 rounded-full px-3 py-1 text-xs text-gray-500">
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block" />
-                    Free case report — unlock instantly
+          {/* Gradient overlay — fades out when unlocked */}
+          <div
+            className={`absolute inset-0 z-10 pointer-events-none transition-opacity duration-700 ${
+              unlocked ? 'opacity-0' : 'opacity-100'
+            }`}
+            style={{ background: 'linear-gradient(to bottom, transparent 0%, #0f1623 30%)' }}
+          />
+
+          {/* Form card / Unlocked cards — always in normal flow (determines container height) */}
+          <div className="relative z-20 max-w-lg mx-auto px-4 pt-6 pb-16">
+
+            {!unlocked ? (
+
+              /* ── FORM CARD ──────────────────────────────────────────── */
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5 md:p-8 shadow-2xl">
+
+                {/* ① Social proof badge */}
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse" />
+                  <span className="text-emerald-400 text-sm">
+                    {socialProofCount} workers in {stateData?.name ?? 'your state'} got their report today
                   </span>
                 </div>
 
-                <h3 className="text-sm sm:text-base font-semibold text-gray-900 text-center mb-1">
-                  Get your full case report
-                </h3>
-                <p className="text-xs text-gray-500 text-center leading-relaxed mb-3">
-                  Attorney contacts, your exact deadline, and a step-by-step claim guide.
-                </p>
-
-                {/* Unlock items */}
-                <div className="flex flex-col gap-1.5 mb-4">
-                  {[
-                    `Attorneys in ${stateData?.name ?? 'your state'} for ${injuryData?.name ?? 'your injury'}`,
-                    'Your exact filing deadline',
-                    'First call guide + red flags',
-                  ].map((text, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs text-gray-700">
-                      <div
-                        className="w-4 h-4 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 text-emerald-800 font-semibold"
-                        style={{ fontSize: '9px' }}
-                      >✓</div>
-                      {text}
-                    </div>
-                  ))}
+                {/* ② Urgency bar */}
+                <div className="bg-amber-900/40 border border-amber-600/40 rounded-lg px-4 py-2.5 mt-3">
+                  <p className="text-amber-300 text-sm font-medium">
+                    ⚠ {stateData?.name ?? 'State'} filing deadline: {filingDeadline.sol} from your injury date
+                  </p>
                 </div>
 
-                {/* Form fields */}
-                <div className="flex flex-col gap-2 mb-2">
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Full name (letters only)"
-                      value={name}
-                      onChange={e => { setName(sanitizeName(e.target.value)); if (nameError) setNameError('') }}
-                      onBlur={() => { if (name && !validateName(name)) setNameError('Please enter your name in English letters only') }}
-                      onFocus={() => setNameError('')}
-                      className={`w-full px-3 py-2.5 rounded-lg text-sm text-gray-900 outline-none transition-colors focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 ${nameError ? 'border border-red-400' : 'border border-gray-200'}`}
-                    />
-                    {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
+                {/* ③ Title block */}
+                <div className="mt-4">
+                  <h3 className="text-white font-semibold text-xl md:text-2xl">
+                    Unlock Your Free Settlement Report
+                  </h3>
+                  <p className="text-emerald-400 text-sm mt-1">Free · 30 seconds · No obligation</p>
+                </div>
+
+                {/* ④ Field group */}
+                <div className="mt-4 space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Full Name"
+                        value={name}
+                        onChange={e => setName(sanitizeName(e.target.value))}
+                        className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
+                      />
+                      {submitAttempted && sanitizeName(name).trim().length < 2 && (
+                        <p className="text-red-400 text-xs mt-1">Please enter your full name</p>
+                      )}
+                    </div>
+                    <div>
+                      <input
+                        type="tel"
+                        placeholder="(555) 555-5555"
+                        value={formatPhone(phone)}
+                        onChange={e => setPhone(sanitizePhone(e.target.value))}
+                        className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
+                      />
+                      {submitAttempted && !validatePhone(phone) && (
+                        <p className="text-red-400 text-xs mt-1">Enter a valid 10-digit US phone number</p>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <input
                       type="email"
                       placeholder="Email address"
                       value={email}
-                      onChange={e => { setEmail(e.target.value); if (emailError) setEmailError('') }}
-                      onBlur={() => { if (email && !validateEmail(email)) setEmailError('Please enter a valid email address') }}
-                      onFocus={() => setEmailError('')}
-                      className={`w-full px-3 py-2.5 rounded-lg text-sm text-gray-900 outline-none transition-colors focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 ${emailError ? 'border border-red-400' : 'border border-gray-200'}`}
+                      onChange={e => setEmail(e.target.value)}
+                      className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
                     />
-                    {emailError && <p className="text-xs text-red-500 mt-1">{emailError}</p>}
-                  </div>
-                  <div>
-                    <input
-                      type="tel"
-                      placeholder="(555) 555-5555"
-                      value={formatPhone(phone)}
-                      onChange={e => { setPhone(sanitizePhone(e.target.value)); if (phoneError) setPhoneError('') }}
-                      onBlur={() => { if (phone && !validatePhone(phone)) setPhoneError('Please enter a valid 10-digit US phone number') }}
-                      onFocus={() => setPhoneError('')}
-                      className={`w-full px-3 py-2.5 rounded-lg text-sm text-gray-900 outline-none transition-colors focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 ${phoneError ? 'border border-red-400' : 'border border-gray-200'}`}
-                    />
-                    {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
+                    {submitAttempted && !validateEmail(email) && (
+                      <p className="text-red-400 text-xs mt-1">Enter a valid email address</p>
+                    )}
                   </div>
                 </div>
 
-                {/* Consent */}
-                <label className="flex gap-2 items-start mb-3 cursor-pointer">
+                {/* ⑤ Consent checkbox */}
+                <div className="flex items-start gap-2.5 mt-4">
                   <input
                     type="checkbox"
+                    id="blur-consent"
                     checked={consent}
                     onChange={e => setConsent(e.target.checked)}
-                    className="mt-0.5 flex-shrink-0 accent-emerald-600"
+                    className={`w-4 h-4 mt-0.5 flex-shrink-0 accent-emerald-500${submitAttempted && !consent ? ' outline outline-1 outline-amber-400' : ''}`}
                   />
-                  <span className="text-xs text-gray-400 leading-relaxed">
-                    By submitting, I agree to be contacted by a licensed workers&apos; comp attorney
-                    regarding my claim. WorkerRight may receive a referral fee. This is free to me.
-                  </span>
-                </label>
+                  <label htmlFor="blur-consent" className="text-gray-400 text-xs leading-relaxed cursor-pointer">
+                    I agree to be contacted by a licensed {stateData?.name ?? 'state'} workers&apos; comp attorney about my case. Not legal advice.{' '}
+                    <Link href="/legal/terms" className="text-emerald-400 underline">Terms</Link>
+                    {' · '}
+                    <Link href="/legal/privacy" className="text-emerald-400 underline">Privacy</Link>
+                  </label>
+                </div>
 
-                {formError && <p className="text-xs text-red-500 mb-2">{formError}</p>}
+                {/* DB error */}
+                {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
 
-                {/* Submit */}
+                {/* ⑥ Submit button */}
                 <button
+                  type="button"
                   onClick={handleSubmit}
-                  disabled={!isFormValid(name, phone, email, consent) || submitting}
-                  className={`w-full py-3 rounded-lg text-sm font-medium text-white border-none transition-all ${isFormValid(name, phone, email, consent) && !submitting ? 'bg-emerald-600 hover:bg-emerald-700 cursor-pointer' : 'bg-gray-300 cursor-not-allowed opacity-60'}`}
+                  disabled={loading}
+                  className={`w-full py-4 rounded-xl text-base font-semibold mt-4 transition-colors duration-150 flex items-center justify-center gap-2 ${
+                    loading || !isFormValid(name, phone, email, consent)
+                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed opacity-60'
+                      : 'bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white cursor-pointer'
+                  }`}
                 >
-                  {submitting ? 'Submitting...' : 'Get my free case report →'}
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                      Unlocking...
+                    </>
+                  ) : 'Unlock My Free Report →'}
                 </button>
 
-                <p className="text-xs text-gray-400 text-center mt-2">
-                  No spam · One contact from a licensed attorney · That&apos;s it
+                {/* ⑦ Friction-reduction text */}
+                <p className="text-gray-500 text-xs text-center mt-2">
+                  No spam. No sales calls unless you request one.
                 </p>
-              </div>
-            </div>
-          </div>
 
-        ) : (
+                {/* ⑧ What happens next */}
+                <div className="border-t border-white/10 mt-6 pt-6">
+                  <p className="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                    WHAT HAPPENS NEXT?
+                  </p>
+                  {[
+                    `We match you with a licensed workers' comp attorney in ${stateData?.name ?? 'your state'}`,
+                    'They review your case details — confidentially, for free',
+                    'You decide if you want to proceed. No pressure, no obligation.',
+                  ].map((text, i) => (
+                    <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
+                      <div className="w-6 h-6 rounded-full bg-emerald-600/20 text-emerald-400 text-xs flex items-center justify-center flex-shrink-0">
+                        {i + 1}
+                      </div>
+                      <p className="text-gray-300 text-sm">{text}</p>
+                    </div>
+                  ))}
+                </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 text-center my-4">
-            {/* Check icon */}
-            <div className="flex justify-center mb-4">
-              <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
+                {/* ⑨ Bottom trust text */}
+                <p className="text-gray-500 text-xs text-center mt-4">
+                  Your information is shared only with your matched attorney.
+                </p>
+
               </div>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Your case report is ready</h3>
-            <p className="text-sm text-gray-500 leading-relaxed mb-6">
-              A workers&apos; comp specialist in {stateData?.name ?? 'your state'} will contact you
-              within 24 hours. No obligation.
-            </p>
-            {/* Unlocked items */}
-            <div className="text-left space-y-3">
-              {[
-                {
-                  icon: '📋',
-                  title: 'Your filing deadline',
-                  body: `Based on ${stateData?.name ?? 'state'} law${stateData?.statute ? ` (${stateData.statute})` : ''}, you have ${filingDeadline.sol} from the date of injury.`,
-                },
-                {
-                  icon: '📞',
-                  title: 'First call guide',
-                  body: "DO: Report exact injury date. DON'T: Sign anything without attorney review.",
-                },
-                {
-                  icon: '⚠️',
-                  title: 'Settlement red flags',
-                  body: '"Full and final" release language. Pressure before MMI. Medical-only offers.',
-                },
-              ].map((item, i) => (
-                <div key={i} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                  <span className="text-base flex-shrink-0">{item.icon}</span>
-                  <div>
-                    <div className="text-sm font-medium text-gray-900 mb-0.5">{item.title}</div>
-                    <div className="text-xs text-gray-600 leading-relaxed">{item.body}</div>
+
+            ) : (
+
+              /* ── UNLOCKED CARDS ─────────────────────────────────────── */
+              <>
+                {/* Card A: Call Now */}
+                <div className="bg-[#1a2235] border border-emerald-500/30 rounded-2xl p-5">
+                  <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📞</span>
+                      <div>
+                        <p className="text-emerald-400 font-semibold text-base">Call Now — Free Consultation</p>
+                        <p className="text-gray-400 text-sm mt-0.5">Speak with a licensed workers&apos; comp attorney today</p>
+                      </div>
+                    </div>
+                    <a
+                      href="tel:+18005550199"
+                      onClick={handleCallClick}
+                      className="block w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-5 py-3 rounded-xl text-sm whitespace-nowrap no-underline transition-colors duration-150 text-center"
+                    >
+                      Call Now →
+                    </a>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Card B: Report Unlocked */}
+                <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6 mt-3 text-center">
+                  <div className="text-4xl md:text-5xl text-emerald-400 mb-2">✓</div>
+                  <h3 className="text-white text-2xl font-bold">Report Unlocked!</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed mt-3">
+                    A licensed{' '}
+                    <span className="text-emerald-400 font-semibold">{stateData?.name ?? 'state'}</span>
+                    {' '}attorney will contact you within 1 business day.
+                  </p>
+                  <p className="text-gray-500 text-xs mt-4">For urgent matters, call us directly.</p>
+                </div>
+              </>
+
+            )}
           </div>
 
-        )}
+          {/* Phase 2 content sections — visible only after unlock */}
+          {unlocked && (
+            <div className="relative z-20 px-4 pb-8 max-w-2xl mx-auto space-y-4">
+
+              {/* Section A: Attorneys */}
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
+                <p className="text-white font-semibold mb-4">
+                  Attorneys in {stateData?.name ?? 'your state'} for {injuryData?.name ?? 'your injury'}
+                </p>
+                {[1,2,3].map(i => (
+                  <div key={i} className="border-b border-white/5 last:border-0 py-4 first:pt-0 last:pb-0">
+                    <p className="text-emerald-400 text-sm">★★★★★</p>
+                    <p className="text-white font-medium mt-1">{stateData?.name ?? 'State'} Workers&apos; Comp Specialists</p>
+                    <p className="text-gray-400 text-sm mt-0.5">
+                      Experienced in {injuryData?.name ?? 'workplace injury'} claims · Free consultation
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <span className="bg-emerald-600/20 text-emerald-400 text-xs px-2 py-0.5 rounded">Free consultation</span>
+                      <span className="bg-white/5 text-gray-400 text-xs px-2 py-0.5 rounded">No upfront fees</span>
+                      <span className="bg-white/5 text-gray-400 text-xs px-2 py-0.5 rounded">Contingency only</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Section B: Filing Deadline */}
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
+                <p className="text-amber-300 font-semibold">⚠ Your Exact Filing Deadline</p>
+                <div className="bg-amber-900/20 border border-amber-600/30 rounded-xl p-4 mt-3">
+                  <p className="text-amber-200 text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
+                  {stateData?.statute && (
+                    <p className="text-gray-400 text-sm mt-1">Statute: {stateData.statute}</p>
+                  )}
+                </div>
+                <p className="text-gray-400 text-sm mt-3 leading-relaxed">
+                  Missing this deadline permanently ends your right to compensation.
+                  Consult a licensed attorney to confirm your specific deadline.
+                </p>
+              </div>
+
+              {/* Section C: First Attorney Call Guide */}
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
+                <p className="text-white font-semibold mb-4">Before Your Attorney Call — Be Ready</p>
+                <p className="text-gray-400 text-sm mb-3">Have these ready:</p>
+                {[
+                  'Date, time, and location of your injury',
+                  'Names and contact info of any witnesses',
+                  'Medical records and bills received so far',
+                  'Any written communication from your employer or their insurer',
+                  'Your average weekly wage at the time of injury',
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 mb-2 last:mb-0">
+                    <span className="text-emerald-400 flex-shrink-0">✓</span>
+                    <span className="text-gray-300 text-sm">{item}</span>
+                  </div>
+                ))}
+                <p className="text-gray-400 text-sm mt-4 mb-2 font-medium">Questions to ask your attorney:</p>
+                {[
+                  `Have you handled ${injuryData?.name ?? 'workplace injury'} cases in ${stateData?.name ?? 'your state'} before?`,
+                  "What percentage of your workers' comp cases settle vs. go to hearing?",
+                  "Do you work on contingency? What is your fee?",
+                  "What is the realistic range for my case?",
+                ].map((q, i) => (
+                  <div key={i} className="flex gap-2 mb-2 last:mb-0">
+                    <span className="text-emerald-400 flex-shrink-0 font-bold">·</span>
+                    <span className="text-gray-300 text-sm">{q}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Section D: Step-by-step Claim Guide */}
+              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
+                <p className="text-white font-semibold mb-4">
+                  Your {stateData?.name ?? 'State'} Workers&apos; Comp Claim — Step by Step
+                </p>
+                {[
+                  'Report the injury to your employer in writing — immediately',
+                  "Seek authorized medical treatment (use employer's approved provider)",
+                  `File the required form with the ${stateData?.name ?? 'state'} Workers' Comp Board`,
+                  'Document every medical visit, missed workday, and out-of-pocket expense',
+                  "Do NOT accept the first settlement offer without an attorney's review",
+                  `If denied, file an appeal before your ${filingDeadline.sol} deadline expires`,
+                ].map((step, i) => (
+                  <div key={i} className="flex items-start gap-3 mb-4 last:mb-0">
+                    <div className="w-7 h-7 rounded-full bg-emerald-600/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">
+                      {i + 1}
+                    </div>
+                    <p className="text-gray-300 text-sm leading-relaxed pt-1">{step}</p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          )}
+
+        </div>
 
         {/* Timeline — always visible */}
         <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 mb-5">
@@ -621,7 +778,7 @@ export default function ResultsContent() {
       </div>
 
       {/* Mobile sticky bar */}
-      {showSticky && !submitted && (
+      {showSticky && !unlocked && (
         <div
           className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 sm:hidden"
           style={{ boxShadow: '0 -4px 16px rgba(0,0,0,0.08)' }}

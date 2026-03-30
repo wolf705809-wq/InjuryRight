@@ -10,54 +10,70 @@ interface Props {
 
 export default function RelatedPages({ state, industry, injury }: Props) {
   const otherInjuries = INJURY_TYPES
+    .filter(i => i.slug !== injury.slug && industry.commonInjuries.includes(i.slug))
+    .slice(0, 3)
+
+  const fallbackInjuries = INJURY_TYPES
     .filter(i => i.slug !== injury.slug)
-    .slice(0, 5)
+    .slice(0, 3)
+
+  const displayInjuries = otherInjuries.length >= 2 ? otherInjuries : fallbackInjuries
 
   const otherStates = US_STATES
     .filter(s => s.slug !== state.slug)
-    .slice(0, 5)
+    .slice(0, 3)
 
   return (
-    <section className="py-10 px-0 border-t border-gray-200 mt-4">
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Other injuries in this state */}
-        <div>
-          <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-4">
-            Other {state.name} Workers&apos; Comp Claims
-          </p>
-          <ul className="space-y-2">
-            {otherInjuries.map(i => (
-              <li key={i.slug}>
-                <Link
-                  href={`/${state.slug}/${industry.slug}/${i.slug}`}
-                  className="text-sm text-emerald-700 hover:text-emerald-900 hover:underline"
-                >
-                  {i.name} in {state.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+    <section className="pt-10 border-t border-[#e5e7eb] mt-4 space-y-10">
 
-        {/* Same injury in other states */}
-        <div>
-          <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-4">
-            {injury.name} in Other States
-          </p>
-          <ul className="space-y-2">
-            {otherStates.map(s => (
-              <li key={s.slug}>
-                <Link
-                  href={`/${s.slug}/${industry.slug}/${injury.slug}`}
-                  className="text-sm text-emerald-700 hover:text-emerald-900 hover:underline"
-                >
-                  {injury.name} in {s.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
+      {/* Other injuries in same industry/state — emerald cards */}
+      <div>
+        <p className="text-[11px] font-medium text-[#059669] uppercase tracking-[0.09em] mb-4">
+          Other {industry.name} injuries in {state.name}:
+        </p>
+        <div className="grid gap-3">
+          {displayInjuries.map(i => (
+            <Link
+              key={i.slug}
+              href={`/${state.slug}/${industry.slug}/${i.slug}`}
+              className="block rounded-lg px-4 py-3 text-sm font-medium text-[#059669] transition-colors hover:bg-[#f0fdf4]"
+              style={{ border: '1px solid #059669' }}
+            >
+              {i.name} workers&apos; comp settlements in {state.name}
+            </Link>
+          ))}
         </div>
       </div>
+
+      {/* Same injury in other states */}
+      <div>
+        <p className="text-[11px] font-medium text-[#6b7280] uppercase tracking-[0.09em] mb-4">
+          {injury.name} workers&apos; comp in other states:
+        </p>
+        <div className="grid gap-2">
+          {otherStates.map(s => (
+            <Link
+              key={s.slug}
+              href={`/${s.slug}/${industry.slug}/${injury.slug}`}
+              className="text-sm text-[#374151] hover:text-[#059669] hover:underline"
+            >
+              {s.name} {industry.name} {injury.name.toLowerCase()} workers&apos; comp
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Calculator CTA link */}
+      <div>
+        <Link
+          href={`/calculator`}
+          className="inline-block bg-[#059669] hover:bg-[#047857] text-white font-semibold text-sm px-6 py-3 rounded-lg transition-colors"
+          style={{ transform: 'scale(1)' }}
+        >
+          Calculate My {state.name} Workers&apos; Comp
+        </Link>
+      </div>
+
     </section>
   )
 }

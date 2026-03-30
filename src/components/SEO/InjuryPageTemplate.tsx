@@ -3,6 +3,7 @@ import CalculatorForm from '@/components/Calculator/CalculatorForm'
 import LeadCaptureForm from '@/components/Results/LeadCaptureForm'
 import LegalReviewer from '@/components/SEO/LegalReviewer'
 import RelatedPages from '@/components/SEO/RelatedPages'
+import TrustBadge from '@/components/SEO/TrustBadge'
 import { RESULTS_DISCLAIMER } from '@/lib/compliance'
 import { USState, Industry, InjuryType } from '@/types'
 import { generatePageCopy } from '@/lib/copy-generator'
@@ -34,12 +35,15 @@ export default function InjuryPageTemplate({ state, industry, injury }: Props) {
 
             {/* H1 — serif 2-line */}
             <h1
-              className="serif font-bold leading-[1.12] mb-0"
+              className="serif font-bold leading-[1.12] mb-3"
               style={{ fontSize: 'clamp(28px,5vw,42px)', letterSpacing: '-0.04em' }}
             >
               <span className="text-[#111827] block">{injury.name} at work in {state.name}?</span>
               <span className="text-[#059669] block">Here&apos;s what the law actually says you&apos;re owed.</span>
             </h1>
+
+            {/* Trust badges */}
+            <TrustBadge state={state.abbr} />
 
             {/* Emerald divider */}
             <div className="em-divider" />
@@ -213,7 +217,168 @@ export default function InjuryPageTemplate({ state, industry, injury }: Props) {
             </section>
           )}
 
-          {/* Section C — FAQ */}
+          {/* ── Featured Snippet Blocks ─────────────────────────────────── */}
+
+          {/* Pattern A — Paragraph snippet (settlement amount queries) */}
+          <section>
+            <h2 className="text-xl font-bold text-[#111827] mb-4 serif" style={{ letterSpacing: '-0.02em' }}>
+              How Much Is a {injury.name} Workers&apos; Comp Settlement in {state.name}?
+            </h2>
+            <p className="text-[15px] text-[#374151] leading-[1.8]">
+              In {state.name}, {injury.name.toLowerCase()} workers&apos; comp settlements typically range from{' '}
+              <strong>${state.avgSettlement.low.toLocaleString()}</strong> to{' '}
+              <strong>${state.avgSettlement.high.toLocaleString()}</strong>. The average settlement is approximately{' '}
+              <strong>${Math.round((state.avgSettlement.low + state.avgSettlement.high) / 2).toLocaleString()}</strong>,
+              though severe cases involving surgery or permanent disability can exceed ${state.avgSettlement.high.toLocaleString()}.{' '}
+              {state.name} pays TTD at <strong>{(state.ttdRate * 100).toFixed(0)}%</strong> of your average weekly wage,
+              capped at <strong>${state.maxWeeklyBenefit.toLocaleString()}/week</strong> under{' '}
+              <strong>{state.statute}</strong>. Filing deadline:{' '}
+              <strong className="text-[#dc2626]">{state.sol}</strong> from date of injury.
+            </p>
+          </section>
+
+          {/* Pattern B — Table snippet (comparison queries) */}
+          <section>
+            <h2 className="text-xl font-bold text-[#111827] mb-4 serif" style={{ letterSpacing: '-0.02em' }}>
+              {state.name} {injury.name} Workers&apos; Comp Settlement Ranges by Severity
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-[#e5e7eb]">
+                    <th className="text-left py-3 pr-4 font-semibold text-[#111827]">Severity Level</th>
+                    <th className="text-left py-3 font-semibold text-[#111827]">Typical Settlement Range</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const lo = state.avgSettlement.low
+                    const hi = state.avgSettlement.high
+                    const span = hi - lo
+                    return [
+                      {
+                        level: 'Minor (no surgery, returned to work < 2 weeks)',
+                        range: `$${lo.toLocaleString()} – $${Math.round(lo + span * 0.3).toLocaleString()}`,
+                      },
+                      {
+                        level: 'Moderate (PT required, partial restrictions)',
+                        range: `$${Math.round(lo + span * 0.3).toLocaleString()} – $${Math.round(lo + span * 0.6).toLocaleString()}`,
+                      },
+                      {
+                        level: 'Severe (surgery or 3+ months off work)',
+                        range: `$${Math.round(lo + span * 0.6).toLocaleString()} – $${hi.toLocaleString()}`,
+                      },
+                      {
+                        level: 'Catastrophic (permanent disability)',
+                        range: `$${hi.toLocaleString()}+ — attorney required`,
+                      },
+                    ].map((row, i) => (
+                      <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-[#fafaf9]'}>
+                        <td className="py-3 pr-4 text-[#374151] border-b border-[#e5e7eb]">{row.level}</td>
+                        <td className="py-3 font-medium text-[#059669] border-b border-[#e5e7eb]">{row.range}</td>
+                      </tr>
+                    ))
+                  })()}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Pattern C — List snippet (determining factors queries) */}
+          <section>
+            <h2 className="text-xl font-bold text-[#111827] mb-4 serif" style={{ letterSpacing: '-0.02em' }}>
+              What Determines a {injury.name} Workers&apos; Comp Settlement in {state.name}?
+            </h2>
+            <ul className="space-y-2">
+              {[
+                'Impairment rating assigned by your doctor',
+                'Average weekly wage before injury',
+                `${state.name}\u2019s TTD rate (${(state.ttdRate * 100).toFixed(0)}%)`,
+                'Whether claim was accepted or denied',
+                'Treatment status (pre-MMI vs. post-MMI)',
+                'Whether you have legal representation',
+              ].map(item => (
+                <li key={item} className="flex items-start gap-3 text-[15px] text-[#374151]">
+                  <span className="text-[#059669] font-bold mt-0.5 flex-shrink-0">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Pattern D — Procedure snippet (how-to queries) */}
+          <section>
+            <h2 className="text-xl font-bold text-[#111827] mb-4 serif" style={{ letterSpacing: '-0.02em' }}>
+              How to File a Workers&apos; Comp Claim in {state.name} After {injury.name}
+            </h2>
+            <ol className="space-y-3">
+              {[
+                `Report your injury to your employer within ${state.reportingDays} days`,
+                'Seek medical treatment from an authorized provider',
+                `File DWC claim form within ${state.sol} of the injury date`,
+                'Document all symptoms, treatments, and work limitations',
+                'Do not sign any settlement without attorney review',
+              ].map((step, i) => (
+                <li key={i} className="flex items-start gap-3 text-[15px] text-[#374151]">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#ecfdf5] text-[#059669] text-[12px] font-bold flex items-center justify-center mt-0.5">
+                    {i + 1}
+                  </span>
+                  {step}
+                </li>
+              ))}
+            </ol>
+          </section>
+
+          {/* Section C — Denied Claim */}
+          <section
+            className="rounded-xl p-5"
+            style={{ background: '#fef2f2', border: '1px solid #fecaca' }}
+          >
+            <h2 className="text-base font-semibold text-gray-900 mb-2">
+              What if my {injury.name.toLowerCase()} claim was denied in {state.name}?
+            </h2>
+            <p className="text-sm text-[#374151] leading-relaxed mb-3">
+              Denied claims are common — and most are overturned with the right documentation.
+              In {state.name}, you have the right to appeal to the {state.regulator} within {state.sol} of the original
+              injury date under {state.statute}. Common reasons for denial include late reporting, missing medical
+              documentation, or employer disputes.
+            </p>
+            <ul className="space-y-1.5">
+              {[
+                'Request a copy of the denial letter and reason',
+                `File an appeal with the ${state.regulator}`,
+                'Gather all medical records and doctor notes',
+                'Contact a workers\u2019 comp attorney — most take cases on contingency',
+              ].map(step => (
+                <li key={step} className="flex items-start gap-2 text-sm text-[#374151]">
+                  <span className="text-[#dc2626] font-bold mt-0.5 flex-shrink-0">→</span>
+                  {step}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* Section D — Employment Type Coverage */}
+          <section>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">
+              Workers&apos; comp coverage by employment type in {state.name}
+            </h2>
+            <div className="space-y-2">
+              {[
+                { type: 'Full-time employee', coverage: `Fully covered under ${state.statute}.` },
+                { type: 'Part-time employee', coverage: 'May receive prorated benefits based on average weekly wage.' },
+                { type: 'Independent contractor', coverage: 'Generally not covered — but may qualify if misclassified.' },
+                { type: 'Gig worker', coverage: `Coverage depends on degree of employer control. ${state.name} courts have expanded coverage in recent cases.` },
+              ].map(row => (
+                <div key={row.type} className="flex gap-3 text-sm border-b border-[#e5e7eb] pb-2">
+                  <span className="font-medium text-[#111827] min-w-[160px] flex-shrink-0">{row.type}</span>
+                  <span className="text-[#6b7280]">{row.coverage}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Section E — FAQ */}
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-6">Frequently asked questions</h2>
             <div className="space-y-3">
@@ -249,11 +414,11 @@ export default function InjuryPageTemplate({ state, industry, injury }: Props) {
         <nav className="max-w-5xl mx-auto text-xs text-gray-400 flex gap-2 flex-wrap">
           <Link href="/" className="hover:text-gray-600">Home</Link>
           <span>/</span>
-          <Link href={`/${state.slug}`} className="hover:text-gray-600">{state.name}</Link>
+          <Link href={`/${state.slug}`} className="hover:text-gray-600">{state.name} workers&apos; comp settlements</Link>
           <span>/</span>
-          <Link href={`/${state.slug}/${industry.slug}`} className="hover:text-gray-600">{industry.name}</Link>
+          <Link href={`/${state.slug}/${industry.slug}`} className="hover:text-gray-600">{state.name} {industry.name} workers&apos; comp settlements</Link>
           <span>/</span>
-          <span>{injury.name}</span>
+          <span>{injury.name} workers&apos; comp in {state.name}</span>
         </nav>
       </div>
     </main>

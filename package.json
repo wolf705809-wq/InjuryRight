@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "validate:schema": "node scripts/validate-schema.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",

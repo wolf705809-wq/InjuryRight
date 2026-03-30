@@ -47,17 +47,19 @@ export default function GuidePage({ params }: Props) {
     '@type': 'Article',
     headline: guide.title,
     description: guide.description,
+    url: `https://getfairclaimpro.com/guides/${guide.slug}`,
+    datePublished: '2025-01-01',
+    dateModified: new Date().toISOString(),
     author: {
       '@type': 'Organization',
-      name: 'WorkerRight',
-      url: 'https://getfairclaimpro.com',
+      name: 'WorkerRight Research Team',
+      url: 'https://getfairclaimpro.com/about',
     },
     publisher: {
       '@type': 'Organization',
       name: 'WorkerRight',
+      url: 'https://getfairclaimpro.com',
     },
-    dateModified: '2025-01-01',
-    url: `https://getfairclaimpro.com/guides/${guide.slug}`,
   }
 
   return (

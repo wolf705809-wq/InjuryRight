@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
-Disallow: /results
+Disallow: /api/
+Disallow: /_next/
+Disallow: /api/leads
+Disallow: /api/call-clicks
 
-Sitemap: https://workinjurycalc.com/sitemap.xml
+Sitemap: https://getfairclaimpro.com/sitemap.xml

@@ -55,8 +55,28 @@ const CASES = [
   },
 ]
 
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'WorkerRight',
+  url: 'https://getfairclaimpro.com',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://getfairclaimpro.com/{search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
 export default function HomePage() {
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
     <main>
 
       {/* ── 1: HERO (Layer C — Humanist Minimal) ────────────────────────── */}
@@ -278,5 +298,6 @@ export default function HomePage() {
       </section>
 
     </main>
+    </>
   )
 }

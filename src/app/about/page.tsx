@@ -173,6 +173,30 @@ export default function AboutPage() {
             </Link>
           </section>
 
+          {/* Methodology — data sources */}
+          <section className="mb-10">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Our data sources</h2>
+            <p className="text-sm text-gray-600 leading-relaxed mb-4">
+              Our content is based on publicly available data from the following authoritative sources:
+            </p>
+            <ul className="space-y-2">
+              {[
+                { label: 'State workers\u2019 compensation statutes (all 47 states)', href: 'https://www.ncci.com/pages/default.aspx' },
+                { label: 'NCCI Workers Compensation Statistical Plan 2025', href: 'https://www.ncci.com/Articles/Pages/II_Insights_2025StateoftheLine.aspx' },
+                { label: 'National Safety Council Injury Facts 2024', href: 'https://injuryfacts.nsc.org/' },
+                { label: 'Bureau of Labor Statistics, Injuries, Illnesses, and Fatalities (IIF)', href: 'https://www.bls.gov/iif/' },
+                { label: 'Individual state DWC annual reports', href: 'https://www.dir.ca.gov/dwc/dwc_home_page.htm' },
+              ].map(({ label, href }) => (
+                <li key={href} className="flex items-start gap-2 text-sm text-gray-600">
+                  <span className="text-[#059669] font-bold mt-0.5 flex-shrink-0">·</span>
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="text-[#059669] hover:underline">
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+
           {/* Legal notice */}
           <section
             className="rounded-lg p-4 mb-10"
