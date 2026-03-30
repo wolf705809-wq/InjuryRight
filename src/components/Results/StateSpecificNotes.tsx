@@ -6,10 +6,10 @@ interface Props {
 }
 
 const strengthConfig: Record<CaseStrength, { bar: string; label: string; color: string; width: string }> = {
-  'Very Strong': { bar: 'bg-emerald-600', label: 'Very Strong', color: 'text-emerald-700', width: '95%' },
-  Strong:        { bar: 'bg-emerald-500', label: 'Strong',      color: 'text-emerald-600', width: '72%' },
-  Moderate:      { bar: 'bg-amber-500',   label: 'Moderate',    color: 'text-amber-700',   width: '50%' },
-  Weak:          { bar: 'bg-red-400',     label: 'Weak',        color: 'text-red-600',     width: '25%' },
+  'Very Strong': { bar: 'bg-[#059669]', label: 'Very Strong', color: 'text-[#065f46]', width: '95%' },
+  Strong:        { bar: 'bg-[#059669]', label: 'Strong',      color: 'text-[#065f46]', width: '72%' },
+  Moderate:      { bar: 'bg-[#059669]', label: 'Moderate',    color: 'text-[#065f46]', width: '50%' },
+  Weak:          { bar: 'bg-[#059669]', label: 'Weak',        color: 'text-[#065f46]', width: '25%' },
 }
 
 export default function StateSpecificNotes({ stateNotes, caseStrength }: Props) {
@@ -23,7 +23,7 @@ export default function StateSpecificNotes({ stateNotes, caseStrength }: Props) 
           <span className="text-xs text-gray-500">Estimated likelihood of recovery</span>
           <span className={`text-sm font-semibold ${cfg.color}`}>{cfg.label}</span>
         </div>
-        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="h-2 bg-[#e5e7eb] rounded-full overflow-hidden">
           <div className={`h-full ${cfg.bar} rounded-full transition-all duration-700`} style={{ width: cfg.width }} />
         </div>
       </div>
@@ -44,7 +44,7 @@ export default function StateSpecificNotes({ stateNotes, caseStrength }: Props) 
       {/* Next steps */}
       <div className="border border-emerald-200 bg-emerald-50 rounded-xl p-5">
         <h3 className="text-sm font-semibold text-emerald-800 mb-3">What to do next</h3>
-        <ul className="space-y-1.5 text-xs text-emerald-700">
+        <ul className="space-y-1.5 text-xs text-[#065f46]">
           {['Report your injury to your employer immediately', 'Seek medical treatment from an approved provider', 'Do not sign any settlement without attorney review', 'Contact a workers\' comp attorney — most work free until you win'].map(s => (
             <li key={s} className="flex gap-2"><span>✓</span>{s}</li>
           ))}

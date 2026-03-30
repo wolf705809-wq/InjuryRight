@@ -1,78 +1,50 @@
-import { MetadataRoute } from 'next'
-import { US_STATES, INDUSTRIES, INJURY_TYPES } from '@/lib/pseo-data'
-import { GUIDES } from '@/lib/guides-data'
+import type { MetadataRoute } from 'next'
+import { US_STATES } from '@/lib/pseo-data'
 
 const BASE_URL = 'https://getfairclaimpro.com'
-const PHASE = Number(process.env.SITEMAP_PHASE ?? 1)
+const PHASE = process.env.SITEMAP_PHASE === '2' ? 2 : 1
+const PSEO_CHUNKS = 15
 
-// Major 5 states get full treatment in Phase 1
-const MAJOR_STATES = ['california', 'texas', 'florida', 'new-york', 'illinois']
+const STATIC_ENTRIES: MetadataRoute.Sitemap = [
+  { url: `${BASE_URL}/`,                                                  lastModified: new Date(), changeFrequency: 'weekly',  priority: 1.0 },
+  { url: `${BASE_URL}/calculator`,                                         lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
+  { url: `${BASE_URL}/workers-comp-statistics`,                            lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+  { url: `${BASE_URL}/guides`,                                             lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.7 },
+  { url: `${BASE_URL}/guides/what-to-do-after-workplace-injury`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+  { url: `${BASE_URL}/guides/how-workers-comp-settlements-work`,           lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+  { url: `${BASE_URL}/guides/understanding-state-workers-comp-laws`,       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+  { url: `${BASE_URL}/guides/denied-claim-what-to-do-next`,               lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+  { url: `${BASE_URL}/guides/gig-worker-rights`,                          lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
+  { url: `${BASE_URL}/about`,                                              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+  { url: `${BASE_URL}/methodology`,                                        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6 },
+  { url: `${BASE_URL}/contact`,                                            lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.4 },
+  { url: `${BASE_URL}/legal/disclaimer`,                                   lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+  { url: `${BASE_URL}/legal/privacy`,                                      lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+  { url: `${BASE_URL}/legal/terms`,                                        lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+  { url: `${BASE_URL}/legal/referral-disclosure`,                          lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+  { url: `${BASE_URL}/legal/attorney-advertising`,                         lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3 },
+]
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date().toISOString()
-  const entries: MetadataRoute.Sitemap = []
-
-  // ── Core pages (all phases) ────────────────────────────────────────────────
-  entries.push(
-    { url: BASE_URL,                                  lastModified: now, changeFrequency: 'monthly', priority: 1.0 },
-    { url: `${BASE_URL}/calculator`,                  lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
-    { url: `${BASE_URL}/workers-comp-statistics`,     lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/guides`,                      lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${BASE_URL}/about`,                       lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
-    { url: `${BASE_URL}/methodology`,                 lastModified: now, changeFrequency: 'yearly',  priority: 0.4 },
-    { url: `${BASE_URL}/contact`,                     lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${BASE_URL}/results`,                     lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${BASE_URL}/legal/privacy`,               lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${BASE_URL}/legal/terms`,                 lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${BASE_URL}/legal/disclaimer`,            lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${BASE_URL}/legal/referral-disclosure`,   lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${BASE_URL}/legal/attorney-advertising`,  lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-  )
-
-  for (const guide of GUIDES) {
-    entries.push({ url: `${BASE_URL}/guides/${guide.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 })
+  // Phase 1: embed static + state URLs directly (~64 URLs, for initial indexing test)
+  if (PHASE === 1) {
+    const stateEntries: MetadataRoute.Sitemap = US_STATES.map(s => ({
+      url: `${BASE_URL}/${s.slug}`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }))
+    return [...STATIC_ENTRIES, ...stateEntries]
   }
 
-  for (const injury of INJURY_TYPES) {
-    entries.push({ url: `${BASE_URL}/injuries/${injury.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
+  // Phase 2: sitemap index — points to split sitemap route handlers
+  const entries: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/sitemap-static.xml` },
+    { url: `${BASE_URL}/sitemap-states.xml` },
+    { url: `${BASE_URL}/sitemap-state-industry.xml` },
+  ]
+  for (let i = 0; i < PSEO_CHUNKS; i++) {
+    entries.push({ url: `${BASE_URL}/sitemap-pseo/${i}.xml` })
   }
-
-  // ── Phase 1: All 47 state home pages + major 5 states full ────────────────
-  // All state home pages
-  for (const state of US_STATES) {
-    entries.push({ url: `${BASE_URL}/${state.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 })
-  }
-
-  if (PHASE < 2) {
-    // Phase 1: also add major 5 states' industry + injury pages
-    for (const state of US_STATES.filter(s => MAJOR_STATES.includes(s.slug))) {
-      for (const industry of INDUSTRIES) {
-        entries.push({ url: `${BASE_URL}/${state.slug}/${industry.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 })
-        for (const injury of INJURY_TYPES) {
-          entries.push({ url: `${BASE_URL}/${state.slug}/${industry.slug}/${injury.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
-        }
-      }
-    }
-    return entries
-  }
-
-  // ── Phase 2: All 47 × 12 industry pages ───────────────────────────────────
-  for (const state of US_STATES) {
-    for (const industry of INDUSTRIES) {
-      entries.push({ url: `${BASE_URL}/${state.slug}/${industry.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 })
-    }
-  }
-
-  if (PHASE < 3) return entries
-
-  // ── Phase 3: Full 47 × 12 × N injury pages ────────────────────────────────
-  for (const state of US_STATES) {
-    for (const industry of INDUSTRIES) {
-      for (const injury of INJURY_TYPES) {
-        entries.push({ url: `${BASE_URL}/${state.slug}/${industry.slug}/${injury.slug}`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 })
-      }
-    }
-  }
-
   return entries
 }

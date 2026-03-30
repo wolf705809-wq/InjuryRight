@@ -15,13 +15,6 @@ import {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function strengthColor(s: CaseStrength) {
-  return s === 'Very Strong' ? '#059669'
-    : s === 'Strong'   ? '#0284c7'
-    : s === 'Moderate' ? '#d97706'
-    : '#dc2626'
-}
-
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function ResultsContent() {
@@ -184,8 +177,8 @@ export default function ResultsContent() {
         {urgencyFlags.length > 0 && (
           <div className="mb-5 space-y-2">
             {urgencyFlags.map((flag, i) => (
-              <div key={i} className="border-l-[3px] border-[#dc2626] bg-red-50 px-4 py-3 rounded-r-lg">
-                <p className="text-[13px] text-red-900">⚠ {flag}</p>
+              <div key={i} className="border-l-[3px] border-[#dc2626] bg-[rgba(220,38,38,0.08)] px-4 py-3 rounded-r-lg">
+                <p className="text-[13px] text-[#dc2626]">⚠ {flag}</p>
               </div>
             ))}
           </div>
@@ -193,8 +186,8 @@ export default function ResultsContent() {
 
         {/* Coverage note */}
         {coverageNote && (
-          <div className="mb-4 border border-amber-200 bg-amber-50 rounded-lg px-4 py-3">
-            <p className="text-xs text-amber-800">{coverageNote}</p>
+          <div className="mb-4 border border-[#e5e7eb] bg-[#fafaf9] rounded-lg px-4 py-3">
+            <p className="text-xs text-[#374151]">{coverageNote}</p>
           </div>
         )}
 
@@ -305,10 +298,10 @@ export default function ResultsContent() {
           <div className="h-2 bg-[#e5e7eb] rounded-full mb-2">
             <div
               className="h-full rounded-full transition-all duration-1000"
-              style={{ width: `${caseStrengthScore}%`, background: strengthColor(caseStrength) }}
+              style={{ width: `${caseStrengthScore}%`, background: 'var(--em)' }}
             />
           </div>
-          <p className="text-[16px] font-semibold" style={{ color: strengthColor(caseStrength) }}>
+          <p className="text-[16px] font-semibold" style={{ color: 'var(--em-dark)' }}>
             {caseStrength}
           </p>
           <p className="text-[11px] text-[#9ca3af] mt-1">
@@ -327,7 +320,7 @@ export default function ResultsContent() {
                   <span className="font-medium">{formatUSD(companyOfferAnalysis.offerAmount)}</span>
                 </div>
                 <div className="h-2 bg-[#f3f4f6] rounded-full">
-                  <div className="h-full bg-amber-400 rounded-full" style={{ width: `${Math.min(companyOfferAnalysis.offerPct, 100)}%` }} />
+                  <div className="h-full bg-[#059669] rounded-full" style={{ width: `${Math.min(companyOfferAnalysis.offerPct, 100)}%` }} />
                 </div>
               </div>
               <div>
@@ -382,7 +375,7 @@ export default function ResultsContent() {
         </div>
 
         {/* Statute of limitations */}
-        <div className={`rounded-lg px-4 py-3 mb-6 ${filingDeadline.urgency === 'high' ? 'bg-red-50' : 'bg-[#f9fafb]'}`}>
+        <div className={`rounded-lg px-4 py-3 mb-6 border ${filingDeadline.urgency === 'high' ? 'bg-[rgba(220,38,38,0.12)] border-[rgba(220,38,38,0.3)]' : 'bg-[#f9fafb] border-[#e5e7eb]'}`}>
           <p className={`text-[13px] ${filingDeadline.urgency === 'high' ? 'text-[#dc2626] font-semibold' : 'text-[#6b7280]'}`}>
             ⏰ Filing deadline in {stateData?.name ?? 'your state'}: {filingDeadline.sol}
           </p>
@@ -416,8 +409,8 @@ export default function ResultsContent() {
                 ))}
               </div>
               <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
-                <p className="text-amber-300/60 text-sm font-medium mb-2">⚠ Your Exact Filing Deadline</p>
-                <p className="text-amber-200/70 text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
+                <p className="text-[rgba(220,38,38,0.5)] text-sm font-medium mb-2">⚠ Your Exact Filing Deadline</p>
+                <p className="text-white/70 text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
               </div>
               <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
                 <p className="text-white/60 text-sm font-medium mb-3">Before Your Attorney Call — Be Ready</p>
@@ -465,8 +458,8 @@ export default function ResultsContent() {
                 </div>
 
                 {/* ② Urgency bar */}
-                <div className="bg-amber-900/40 border border-amber-600/40 rounded-lg px-4 py-2.5 mt-3">
-                  <p className="text-amber-300 text-sm font-medium">
+                <div className="bg-[rgba(220,38,38,0.12)] border border-[rgba(220,38,38,0.3)] rounded-lg px-4 py-2.5 mt-3">
+                  <p className="text-[#dc2626] text-sm font-medium">
                     ⚠ {stateData?.name ?? 'State'} filing deadline: {filingDeadline.sol} from your injury date
                   </p>
                 </div>
@@ -491,7 +484,7 @@ export default function ResultsContent() {
                         className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
                       />
                       {submitAttempted && sanitizeName(name).trim().length < 2 && (
-                        <p className="text-red-400 text-xs mt-1">Please enter your full name</p>
+                        <p className="text-[#dc2626] text-xs mt-1">Please enter your full name</p>
                       )}
                     </div>
                     <div>
@@ -503,7 +496,7 @@ export default function ResultsContent() {
                         className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
                       />
                       {submitAttempted && !validatePhone(phone) && (
-                        <p className="text-red-400 text-xs mt-1">Enter a valid 10-digit US phone number</p>
+                        <p className="text-[#dc2626] text-xs mt-1">Enter a valid 10-digit US phone number</p>
                       )}
                     </div>
                   </div>
@@ -516,7 +509,7 @@ export default function ResultsContent() {
                       className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
                     />
                     {submitAttempted && !validateEmail(email) && (
-                      <p className="text-red-400 text-xs mt-1">Enter a valid email address</p>
+                      <p className="text-[#dc2626] text-xs mt-1">Enter a valid email address</p>
                     )}
                   </div>
                 </div>
@@ -528,7 +521,7 @@ export default function ResultsContent() {
                     id="blur-consent"
                     checked={consent}
                     onChange={e => setConsent(e.target.checked)}
-                    className={`w-4 h-4 mt-0.5 flex-shrink-0 accent-emerald-500${submitAttempted && !consent ? ' outline outline-1 outline-amber-400' : ''}`}
+                    className={`w-4 h-4 mt-0.5 flex-shrink-0 accent-[#059669]${submitAttempted && !consent ? ' outline outline-1 outline-[#dc2626]' : ''}`}
                   />
                   <label htmlFor="blur-consent" className="text-gray-400 text-xs leading-relaxed cursor-pointer">
                     I agree to be contacted by a licensed {stateData?.name ?? 'state'} workers&apos; comp attorney about my case. Not legal advice.{' '}
@@ -539,7 +532,7 @@ export default function ResultsContent() {
                 </div>
 
                 {/* DB error */}
-                {error && <p className="text-red-400 text-sm mt-3">{error}</p>}
+                {error && <p className="text-[#dc2626] text-sm mt-3">{error}</p>}
 
                 {/* ⑥ Submit button */}
                 <button
@@ -661,9 +654,9 @@ export default function ResultsContent() {
 
               {/* Section B: Filing Deadline */}
               <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
-                <p className="text-amber-300 font-semibold">⚠ Your Exact Filing Deadline</p>
-                <div className="bg-amber-900/20 border border-amber-600/30 rounded-xl p-4 mt-3">
-                  <p className="text-amber-200 text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
+                <p className="text-[#dc2626] font-semibold">⚠ Your Exact Filing Deadline</p>
+                <div className="bg-[rgba(220,38,38,0.12)] border border-[rgba(220,38,38,0.3)] rounded-xl p-4 mt-3">
+                  <p className="text-[#dc2626] text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
                   {stateData?.statute && (
                     <p className="text-gray-400 text-sm mt-1">Statute: {stateData.statute}</p>
                   )}
@@ -849,7 +842,7 @@ function CatastrophicGate({ stateName }: { stateName: string }) {
   return (
     <main className="min-h-screen bg-[#f9fafb] py-16">
       <div className="max-w-lg mx-auto px-4">
-        <div className="bg-red-50 border border-red-200 rounded-[12px] p-7 mb-6">
+        <div className="bg-[rgba(220,38,38,0.08)] border border-[rgba(220,38,38,0.25)] rounded-[12px] p-7 mb-6">
           <h2 className="text-[16px] font-semibold text-[#111827] mb-3">Your case requires specialist review</h2>
           <p className="text-sm text-[#374151] leading-relaxed mb-3">
             Catastrophic injuries involve complex long-term calculations that standard formulas significantly underestimate.

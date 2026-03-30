@@ -61,17 +61,17 @@ export default function LeadCaptureForm({ prefill = {} }: Props) {
 
   if (success) {
     return (
-      <div className="border border-emerald-200 bg-emerald-50 rounded-xl p-8 text-center">
-        <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-          <span className="text-emerald-600 text-lg font-bold">✓</span>
+      <div className="border border-[#e5e7eb] bg-[#ecfdf5] rounded-xl p-8 text-center">
+        <div className="w-10 h-10 rounded-full bg-[#ecfdf5] flex items-center justify-center mx-auto mb-4">
+          <span className="text-[#059669] text-lg font-bold">✓</span>
         </div>
-        <h3 className="text-emerald-800 font-semibold text-lg mb-2">Request Received</h3>
-        <p className="text-emerald-700 text-sm">A licensed workers' comp attorney will contact you within 24 hours.</p>
+        <h3 className="text-[#065f46] font-semibold text-lg mb-2">Request Received</h3>
+        <p className="text-[#065f46] text-sm">A licensed workers' comp attorney will contact you within 24 hours.</p>
       </div>
     )
   }
 
-  const inputClass = 'w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 text-sm placeholder:text-gray-400 focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600'
+  const inputClass = 'w-full border border-[#e5e7eb] rounded-lg px-4 py-3 text-[#111827] text-sm placeholder:text-[#9ca3af] focus:border-[#059669] focus:outline-none focus:shadow-[0_0_0_3px_#ecfdf5]'
 
   return (
     <>
@@ -121,7 +121,7 @@ export default function LeadCaptureForm({ prefill = {} }: Props) {
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(555) 000-0000" className={inputClass} />
           </div>
           <div className="flex items-start gap-3 pt-1">
-            <input type="checkbox" id="consent" checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-0.5" style={{ accentColor: '#059669' }} />
+            <input type="checkbox" id="consent" checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-0.5 accent-[#059669]" />
             <label htmlFor="consent" className="text-[11px] text-gray-500 leading-relaxed cursor-pointer">{CONSENT_TEXT}</label>
           </div>
 
@@ -134,7 +134,7 @@ export default function LeadCaptureForm({ prefill = {} }: Props) {
             />
           )}
 
-          {error && <p className="text-red-500 text-xs">{error}</p>}
+          {error && <p className="text-[#dc2626] text-xs">{error}</p>}
           <button
             type="submit"
             disabled={loading}
