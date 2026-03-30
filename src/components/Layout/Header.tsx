@@ -13,9 +13,10 @@ export default function Header() {
           <span className="font-bold text-[#059669]">Right</span>
         </Link>
         <nav className="hidden md:flex items-center gap-7">
-          <Link href="/calculator" className="text-[#6b7280] hover:text-[#111827] text-[12px] transition-colors">Calculator</Link>
-          <Link href="/guides"     className="text-[#6b7280] hover:text-[#111827] text-[12px] transition-colors">Guides</Link>
-          <Link href="/about"      className="text-[#6b7280] hover:text-[#111827] text-[12px] transition-colors">About</Link>
+          <Link href="/calculator"               className="text-[#6b7280] hover:text-[#111827] text-[12px] transition-colors">Calculator</Link>
+          <Link href="/workers-comp-statistics" className="text-[#6b7280] hover:text-[#111827] text-[12px] transition-colors">Statistics</Link>
+          <Link href="/guides"                  className="text-[#6b7280] hover:text-[#111827] text-[12px] transition-colors">Guides</Link>
+          <Link href="/about"                   className="text-[#6b7280] hover:text-[#111827] text-[12px] transition-colors">About</Link>
           <Link
             href="/calculator"
             className="text-white text-[12px] font-medium px-[14px] py-[7px] rounded-md transition-colors hover:opacity-90"
@@ -34,9 +35,10 @@ export default function Header() {
       </div>
       {open && (
         <div className="md:hidden border-t border-[#e5e7eb] px-8 py-4 flex flex-col gap-4 bg-white">
-          <Link href="/calculator" className="text-[#6b7280] text-sm" onClick={() => setOpen(false)}>Calculator</Link>
-          <Link href="/guides"     className="text-[#6b7280] text-sm" onClick={() => setOpen(false)}>Guides</Link>
-          <Link href="/about"      className="text-[#6b7280] text-sm" onClick={() => setOpen(false)}>About</Link>
+          <Link href="/calculator"               className="text-[#6b7280] text-sm" onClick={() => setOpen(false)}>Calculator</Link>
+          <Link href="/workers-comp-statistics" className="text-[#6b7280] text-sm" onClick={() => setOpen(false)}>Statistics</Link>
+          <Link href="/guides"                  className="text-[#6b7280] text-sm" onClick={() => setOpen(false)}>Guides</Link>
+          <Link href="/about"                   className="text-[#6b7280] text-sm" onClick={() => setOpen(false)}>About</Link>
           <Link
             href="/calculator"
             className="text-white text-[12px] font-medium px-4 py-2 rounded-md text-center"

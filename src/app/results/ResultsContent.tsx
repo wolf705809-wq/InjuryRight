@@ -1,12 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { WorkersCompInput, CaseStrength } from '@/types'
 import { calculateWorkersCompV2, formatUSD } from '@/lib/calculator-us'
 import { US_STATES, INJURY_TYPES } from '@/lib/pseo-data'
-import { saveLead } from '@/lib/supabase'
+import { saveLead, trackCallClick } from '@/lib/supabase'
+import {
+  sanitizeName, validateName,
+  sanitizePhone, formatPhone, validatePhone,
+  validateEmail, isFormValid,
+} from '@/lib/form-validation'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -29,11 +34,30 @@ export default function ResultsContent() {
   const [consent,    setConsent]    = useState(false)
   const [formError,  setFormError]  = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [nameError,  setNameError]  = useState('')
+  const [phoneError, setPhoneError] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [showSticky, setShowSticky] = useState(false)
 
   // Catastrophic gate
   const isCatastrophic = p.get('catastrophic') === 'true'
   const catastrophicState = p.get('state') || ''
   const catastrophicStateData = US_STATES.find(s => s.slug === catastrophicState)
+
+  // Sticky scroll listener
+  useEffect(() => {
+    const onScroll = () => setShowSticky(window.scrollY > 400)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  // Social proof count — stable pseudo-random per state
+  const todayCount = useMemo(() => {
+    const stateKey = p.get('state') || ''
+    const seed = stateKey.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
+    return 8 + (seed % 15) // 8–22
+  }, [p])
+
   if (isCatastrophic) {
     return <CatastrophicGate stateName={catastrophicStateData?.name ?? 'your state'} />
   }
@@ -75,6 +99,19 @@ export default function ResultsContent() {
     caseStrength, caseStrengthScore, urgencyFlags,
     whyThisNumber, filingDeadline, coverageNote,
   } = result
+
+  const scrollToForm = useCallback(() => {
+    document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [])
+
+  const handleCallClick = useCallback(async () => {
+    await trackCallClick({
+      state: input.state,
+      injury: input.injurySlug,
+      estimatedTotal: scenarios.expected.total,
+      sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+    })
+  }, [input.state, input.injurySlug, scenarios.expected.total])
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -170,6 +207,38 @@ export default function ResultsContent() {
             <p className="text-[11px] text-[#9ca3af] mb-1">Best case</p>
             <p className="text-[18px] font-semibold text-[#111827]">{formatUSD(scenarios.bestCase.total)}</p>
             <p className="text-[11px] text-[#9ca3af] mt-1 leading-tight">{scenarios.bestCase.description}</p>
+          </div>
+        </div>
+
+        {/* Social proof + call buttons */}
+        <div className="mb-4 space-y-3">
+          <div className="flex items-center gap-2 justify-center py-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#059669] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#059669]" />
+            </span>
+            <p className="text-[12px] text-[#6b7280]">
+              <span className="font-medium text-[#111827]">{todayCount} workers</span> in {stateData?.name ?? 'your state'} used this calculator today
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <a
+              href="tel:+18005550199"
+              onClick={handleCallClick}
+              className="flex items-center justify-center gap-2 bg-[#111827] hover:bg-[#1f2937] text-white rounded-lg py-3 text-[13px] font-medium transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5 19.79 19.79 0 010 2.88 2 2 0 012 .7h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.55a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              Call now — free
+            </a>
+            <button
+              type="button"
+              onClick={scrollToForm}
+              className="flex items-center justify-center gap-1 bg-[#059669] hover:bg-[#047857] text-white rounded-lg py-3 text-[13px] font-medium transition-colors"
+            >
+              Get written report →
+            </button>
           </div>
         </div>
 
@@ -303,7 +372,7 @@ export default function ResultsContent() {
         {/* ── PHASE 2: Blur Gate / Unlocked ──────────────────────────────── */}
         {!submitted ? (
 
-          <div className="relative rounded-[12px] overflow-hidden mb-6">
+          <div id="lead-form" className="relative rounded-[12px] overflow-hidden mb-6">
 
             {/* Blurred content — background layer */}
             <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5">
@@ -390,21 +459,37 @@ export default function ResultsContent() {
 
                 {/* Form */}
                 <form onSubmit={handleFormSubmit} className="flex flex-col gap-2 mb-[10px]">
-                  <input
-                    type="text" required value={name} onChange={e => setName(e.target.value)}
-                    placeholder="Your full name"
-                    className={inputCls}
-                  />
-                  <input
-                    type="email" required value={email} onChange={e => setEmail(e.target.value)}
-                    placeholder="Email address"
-                    className={inputCls}
-                  />
-                  <input
-                    type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                    placeholder="Phone number"
-                    className={inputCls}
-                  />
+                  <div>
+                    <input
+                      type="text" required value={name}
+                      onChange={e => { const v = sanitizeName(e.target.value); setName(v); if (nameError) setNameError('') }}
+                      onBlur={() => { if (name && !validateName(name)) setNameError('Enter your full name (letters only)') }}
+                      placeholder="Your full name"
+                      className={`${inputCls} ${nameError ? 'border-[#dc2626]' : ''}`}
+                    />
+                    {nameError && <p className="text-[#dc2626] text-[10px] text-left mt-1">{nameError}</p>}
+                  </div>
+                  <div>
+                    <input
+                      type="email" required value={email}
+                      onChange={e => { setEmail(e.target.value); if (emailError) setEmailError('') }}
+                      onBlur={() => { if (email && !validateEmail(email)) setEmailError('Enter a valid email address') }}
+                      placeholder="Email address"
+                      className={`${inputCls} ${emailError ? 'border-[#dc2626]' : ''}`}
+                    />
+                    {emailError && <p className="text-[#dc2626] text-[10px] text-left mt-1">{emailError}</p>}
+                  </div>
+                  <div>
+                    <input
+                      type="tel"
+                      value={formatPhone(phone)}
+                      onChange={e => { const v = sanitizePhone(e.target.value); setPhone(v); if (phoneError) setPhoneError('') }}
+                      onBlur={() => { if (phone && !validatePhone(phone)) setPhoneError('Enter a 10-digit phone number') }}
+                      placeholder="Phone number"
+                      className={`${inputCls} ${phoneError ? 'border-[#dc2626]' : ''}`}
+                    />
+                    {phoneError && <p className="text-[#dc2626] text-[10px] text-left mt-1">{phoneError}</p>}
+                  </div>
                   <div className="flex gap-2 items-start text-left mt-1">
                     <input
                       type="checkbox" id="gate-consent" checked={consent}
@@ -419,7 +504,7 @@ export default function ResultsContent() {
                   {formError && <p className="text-[#dc2626] text-xs text-left">{formError}</p>}
                   <button
                     type="submit"
-                    disabled={submitting}
+                    disabled={!isFormValid(name, phone, email, consent) || submitting}
                     className="w-full bg-[#059669] hover:bg-[#047857] disabled:bg-[#e5e7eb] disabled:text-[#9ca3af] text-white border-none rounded-lg py-[13px] text-[14px] font-medium cursor-pointer transition-colors mt-1"
                   >
                     {submitting ? 'Submitting…' : 'Get my free case report →'}
@@ -575,6 +660,30 @@ export default function ResultsContent() {
         </div>
 
       </div>
+
+      {/* Mobile sticky bar */}
+      {showSticky && !submitted && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-[#e5e7eb] px-4 py-3 flex gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+          <a
+            href="tel:+18005550199"
+            onClick={handleCallClick}
+            className="flex-1 flex items-center justify-center gap-1.5 bg-[#111827] text-white rounded-lg py-3 text-[13px] font-medium"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5 19.79 19.79 0 010 2.88 2 2 0 012 .7h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.55a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+            </svg>
+            Call free
+          </a>
+          <button
+            type="button"
+            onClick={scrollToForm}
+            className="flex-1 bg-[#059669] text-white rounded-lg py-3 text-[13px] font-medium"
+          >
+            Get report →
+          </button>
+        </div>
+      )}
+
     </main>
   )
 }

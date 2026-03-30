@@ -57,3 +57,21 @@ export async function saveLead(data: LeadFormData): Promise<{ success: boolean; 
   if (error) return { success: false, error: error.message }
   return { success: true }
 }
+
+export async function trackCallClick({
+  state, injury, estimatedTotal, sourceUrl,
+}: {
+  state?: string
+  injury?: string
+  estimatedTotal?: number
+  sourceUrl?: string
+}): Promise<void> {
+  const client = getClient()
+  if (!client) return
+  await client.from('call_clicks').insert([{
+    state:           state || null,
+    injury:          injury || null,
+    estimated_total: estimatedTotal || null,
+    source_url:      sourceUrl || null,
+  }])
+}

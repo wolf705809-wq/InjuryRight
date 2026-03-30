@@ -91,3 +91,19 @@ create or replace view lead_summary as
     contacted
   from leads
   order by created_at desc;
+
+-- call_clicks tracking table
+create table if not exists call_clicks (
+  id               uuid primary key default gen_random_uuid(),
+  created_at       timestamptz not null default now(),
+  state            text,
+  injury           text,
+  estimated_total  int,
+  source_url       text
+);
+
+alter table call_clicks enable row level security;
+
+create policy "Allow insert call_clicks"
+  on call_clicks for insert
+  with check (true);
