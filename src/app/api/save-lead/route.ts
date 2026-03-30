@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { turnstileToken, trustedFormCertUrl, ...lead } = body
+  const { turnstileToken, ...lead } = body
 
   // 2. Turnstile verification
   const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
@@ -91,7 +91,6 @@ export async function POST(req: NextRequest) {
     utm_source:            lead.utmSource         || null,
     utm_medium:            lead.utmMedium         || null,
     utm_campaign:          lead.utmCampaign       || null,
-    trusted_form_cert_url: trustedFormCertUrl     || null,
     status:                'new',
   }])
 
