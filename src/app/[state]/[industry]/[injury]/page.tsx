@@ -51,6 +51,17 @@ export default function InjuryPage({ params }: Props) {
   const ttdPct  = (state.ttdRate * 100).toFixed(0)
   const pageUrl = `https://getfairclaimpro.com/${params.state}/${params.industry}/${params.injury}`
 
+  const legalServiceSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'LegalService',
+    name: `${state.name} Workers' Compensation — WorkerRight`,
+    url: pageUrl,
+    description: `Workers' compensation information and settlement estimates for ${injury.name.toLowerCase()} injuries in the ${industry.name} industry in ${state.name}.`,
+    areaServed: { '@type': 'State', name: state.name },
+    serviceType: "Workers' Compensation Information",
+    provider: { '@type': 'Organization', name: 'WorkerRight', url: 'https://getfairclaimpro.com' },
+  }
+
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -122,7 +133,7 @@ export default function InjuryPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify([faqSchema, breadcrumbSchema, articleSchema]) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([legalServiceSchema, faqSchema, breadcrumbSchema, articleSchema]) }}
       />
       <InjuryPageTemplate state={state} industry={industry} injury={injury} />
     </>
