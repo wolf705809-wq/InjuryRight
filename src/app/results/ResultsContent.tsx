@@ -104,48 +104,52 @@ export default function ResultsContent() {
     setLoading(true)
     setError(null)
 
-    const res = await fetch('/api/save-lead', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        phone: phone.replace(/\D/g, ''),
-        country: 'us',
-        consent: true,
-        state: input.state,
-        industry: input.industry,
-        injuryType: input.injurySlug,
-        weeklyWage: input.weeklyWage,
-        employmentMonths: input.employmentMonths,
-        employmentStatus: input.employmentStatus,
-        employerControl: input.employerControl ?? undefined,
-        severityLevel: input.severityLevel,
-        treatmentStatus: input.treatmentStatus,
-        claimStatus: input.claimStatus,
-        companyOffer: input.companyOffer,
-        isEstimatedRating: breakdown.isEstimatedRating,
-        impairmentRating: breakdown.impairmentRatingUsed,
-        ttdEstimate: breakdown.ttd,
-        ppdEstimate: breakdown.ppd,
-        medicalEstimate: breakdown.medicalEstimate,
-        totalLow: scenarios.conservative.total,
-        totalHigh: scenarios.bestCase.total,
-        caseStrength,
-        caseStrengthScore,
-        sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
-        turnstileToken: turnstileToken || undefined,
-      }),
-    })
-    const json = await res.json()
-    if (!json.success) {
+    try {
+      const res = await fetch('/api/save-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          phone: phone.replace(/\D/g, ''),
+          country: 'us',
+          consent: true,
+          state: input.state,
+          industry: input.industry,
+          injuryType: input.injurySlug,
+          weeklyWage: input.weeklyWage,
+          employmentMonths: input.employmentMonths,
+          employmentStatus: input.employmentStatus,
+          employerControl: input.employerControl ?? undefined,
+          severityLevel: input.severityLevel,
+          treatmentStatus: input.treatmentStatus,
+          claimStatus: input.claimStatus,
+          companyOffer: input.companyOffer,
+          isEstimatedRating: breakdown.isEstimatedRating,
+          impairmentRating: breakdown.impairmentRatingUsed,
+          ttdEstimate: breakdown.ttd,
+          ppdEstimate: breakdown.ppd,
+          medicalEstimate: breakdown.medicalEstimate,
+          totalLow: scenarios.conservative.total,
+          totalHigh: scenarios.bestCase.total,
+          caseStrength,
+          caseStrengthScore,
+          sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+          turnstileToken: turnstileToken || undefined,
+        }),
+      })
+      const json = await res.json()
+      if (!json.success) {
+        setError('Something went wrong. Please try again.')
+        setLoading(false)
+        return
+      }
+      setUnlocked(true)
+    } catch {
       setError('Something went wrong. Please try again.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    setUnlocked(true)
-    setLoading(false)
   }, [name, email, phone, consent, turnstileToken, input, breakdown, scenarios, caseStrength, caseStrengthScore, stateData, injuryData, filingDeadline])
 
   const handleCallClick = useCallback(async () => {
@@ -814,15 +818,20 @@ function CatastrophicGate({ stateName }: { stateName: string }) {
     e.preventDefault()
     if (!consent) { setErr('You must agree to be contacted.'); return }
     setSubmitting(true); setErr('')
-    const res = await saveLead({
-      name, email, phone: phone || undefined,
-      country: 'us',
-      state: stateName.toLowerCase().replace(/\s+/g, '-'),
-      consent,
-    })
-    setSubmitting(false)
-    if (res.success) setSubmitted(true)
-    else setErr('Something went wrong. Please try again.')
+    try {
+      const res = await saveLead({
+        name, email, phone: phone || undefined,
+        country: 'us',
+        state: stateName.toLowerCase().replace(/\s+/g, '-'),
+        consent,
+      })
+      if (res.success) setSubmitted(true)
+      else setErr('Something went wrong. Please try again.')
+    } catch {
+      setErr('Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const inputCls = 'w-full border border-[var(--border)] rounded-lg px-4 py-3 text-[var(--ink)] text-sm placeholder:text-[var(--ink-4)] focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/10'

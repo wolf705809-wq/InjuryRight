@@ -1,6 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+function escapeHtml(str: unknown): string {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
+
 export async function POST(req: NextRequest) {
+  // Referer validation
+  const referer = req.headers.get('referer') ?? ''
+  const isAllowed =
+    referer.includes('getfairclaimpro.com') ||
+    referer.includes('localhost')
+  if (!isAllowed) {
+    return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
+  }
+
   const data = await req.json()
   const {
     email, name, state, injury,
@@ -29,27 +47,27 @@ export async function POST(req: NextRequest) {
       <span style="font-size:22px;font-weight:700;color:#ffffff">Worker</span><span style="font-size:22px;font-weight:700;color:#059669">Right</span>
     </div>
 
-    <p style="color:#9ca3af;margin:0 0 24px">Hi ${name},</p>
+    <p style="color:#9ca3af;margin:0 0 24px">Hi ${escapeHtml(name)},</p>
 
     <div style="background:#1a2235;border:1px solid #2d3748;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center">
       <p style="color:#9ca3af;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;margin:0 0 8px">Estimated Settlement Range</p>
       <p style="color:#059669;font-size:32px;font-weight:700;margin:0">${fmt(conservative)} — ${fmt(bestCase)}</p>
-      <p style="color:#6b7280;font-size:13px;margin:8px 0 0">Expected: ${fmt(expected)} · Case Strength: ${caseStrength}</p>
+      <p style="color:#6b7280;font-size:13px;margin:8px 0 0">Expected: ${fmt(expected)} · Case Strength: ${escapeHtml(caseStrength)}</p>
     </div>
 
     <div style="background:#1a2235;border:1px solid #2d3748;border-radius:16px;padding:20px;margin-bottom:20px">
       <p style="color:#059669;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;font-weight:600;margin:0 0 12px">Case Details</p>
       <table style="width:100%;border-collapse:collapse">
-        <tr><td style="color:#9ca3af;font-size:13px;padding:4px 0">State</td><td style="color:#ffffff;font-size:13px;text-align:right">${state}</td></tr>
-        <tr><td style="color:#9ca3af;font-size:13px;padding:4px 0">Injury</td><td style="color:#ffffff;font-size:13px;text-align:right">${injury}</td></tr>
-        <tr><td style="color:#9ca3af;font-size:13px;padding:4px 0">Filing Deadline</td><td style="color:#fbbf24;font-size:13px;text-align:right;font-weight:600">${sol} from injury date</td></tr>
-        <tr><td style="color:#9ca3af;font-size:13px;padding:4px 0">Statute</td><td style="color:#ffffff;font-size:13px;text-align:right">${statute}</td></tr>
+        <tr><td style="color:#9ca3af;font-size:13px;padding:4px 0">State</td><td style="color:#ffffff;font-size:13px;text-align:right">${escapeHtml(state)}</td></tr>
+        <tr><td style="color:#9ca3af;font-size:13px;padding:4px 0">Injury</td><td style="color:#ffffff;font-size:13px;text-align:right">${escapeHtml(injury)}</td></tr>
+        <tr><td style="color:#9ca3af;font-size:13px;padding:4px 0">Filing Deadline</td><td style="color:#fbbf24;font-size:13px;text-align:right;font-weight:600">${escapeHtml(sol)} from injury date</td></tr>
+        <tr><td style="color:#9ca3af;font-size:13px;padding:4px 0">Statute</td><td style="color:#ffffff;font-size:13px;text-align:right">${escapeHtml(statute)}</td></tr>
       </table>
     </div>
 
     <div style="background:#1a2235;border:1px solid #2d3748;border-radius:16px;padding:20px;margin-bottom:24px">
       <p style="color:#059669;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;font-weight:600;margin:0 0 12px">Next Steps</p>
-      <p style="color:#d1d5db;font-size:13px;margin:0 0 8px">① A licensed ${state} workers' comp attorney may contact you within 24 hours.</p>
+      <p style="color:#d1d5db;font-size:13px;margin:0 0 8px">① A licensed ${escapeHtml(state)} workers' comp attorney may contact you within 24 hours.</p>
       <p style="color:#d1d5db;font-size:13px;margin:0 0 8px">② The consultation is completely free — no obligation to proceed.</p>
       <p style="color:#d1d5db;font-size:13px;margin:0">③ Do not accept any settlement offer before speaking with an attorney.</p>
     </div>
