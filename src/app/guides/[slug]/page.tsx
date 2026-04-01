@@ -4,11 +4,9 @@ import type { Metadata } from 'next'
 import { GUIDES } from '@/lib/guides-data'
 import LegalReviewer from '@/components/SEO/LegalReviewer'
 
-interface Props { params: { slug: string } }
+export const revalidate = 86400
 
-export function generateStaticParams() {
-  return GUIDES.map(g => ({ slug: g.slug }))
-}
+interface Props { params: { slug: string } }
 
 export function generateMetadata({ params }: Props): Metadata {
   const guide = GUIDES.find(g => g.slug === params.slug)

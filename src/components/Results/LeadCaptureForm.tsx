@@ -101,28 +101,28 @@ export default function LeadCaptureForm({ prefill = {} }: Props) {
         />
       )}
 
-      <div className="border border-gray-200 rounded-xl p-6 bg-white">
-        <h3 className="text-gray-900 font-semibold text-base mb-1">Get a free case review</h3>
-        <p className="text-gray-500 text-sm mb-6">A licensed attorney in your state contacts you within 24 hours. No fees unless you win.</p>
+      <div className="border border-[var(--border)] rounded-xl p-6 bg-white">
+        <h3 className="text-[var(--ink)] font-semibold text-base mb-1">Get a free case review</h3>
+        <p className="text-[var(--ink-3)] text-sm mb-6">A licensed attorney in your state contacts you within 24 hours. No fees unless you win.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* TrustedForm hidden input — populated automatically by the TrustedForm script */}
           <input type="hidden" name="xxTrustedFormCertUrl" ref={trustedFormRef} />
 
           <div>
-            <label className="text-xs text-gray-500 block mb-1.5">Full Name *</label>
+            <label className="text-xs text-[var(--ink-3)] block mb-1.5">Full Name *</label>
             <input type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="Jane Smith" className={inputClass} />
           </div>
           <div>
-            <label className="text-xs text-gray-500 block mb-1.5">Email Address *</label>
+            <label className="text-xs text-[var(--ink-3)] block mb-1.5">Email Address *</label>
             <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="jane@email.com" className={inputClass} />
           </div>
           <div>
-            <label className="text-xs text-gray-500 block mb-1.5">Phone (optional)</label>
+            <label className="text-xs text-[var(--ink-3)] block mb-1.5">Phone (optional)</label>
             <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(555) 000-0000" className={inputClass} />
           </div>
           <div className="flex items-start gap-3 pt-1">
             <input type="checkbox" id="consent" checked={consent} onChange={e => setConsent(e.target.checked)} className="mt-0.5 accent-[var(--em)]" />
-            <label htmlFor="consent" className="text-[11px] text-gray-500 leading-relaxed cursor-pointer">{CONSENT_TEXT}</label>
+            <label htmlFor="consent" className="text-[11px] text-[var(--ink-3)] leading-relaxed cursor-pointer">{CONSENT_TEXT}</label>
           </div>
 
           {/* Cloudflare Turnstile widget */}
@@ -138,7 +138,7 @@ export default function LeadCaptureForm({ prefill = {} }: Props) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[var(--em)] hover:bg-[var(--em)] disabled:bg-gray-200 disabled:text-gray-400 text-white font-medium py-3.5 rounded-lg text-sm transition-colors"
+            className="w-full bg-[var(--em)] hover:bg-[var(--em)] disabled:bg-[var(--border)] disabled:text-[var(--ink-4)] text-white font-medium py-3.5 rounded-lg text-sm transition-colors"
           >
             {loading ? 'Submitting…' : 'Get my free attorney review →'}
           </button>

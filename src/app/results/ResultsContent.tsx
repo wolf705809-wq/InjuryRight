@@ -194,7 +194,7 @@ export default function ResultsContent() {
             <p className="text-[18px] font-semibold text-[var(--ink)]">{formatUSD(scenarios.conservative.total)}</p>
             <p className="text-[11px] text-[var(--ink-4)] mt-1 leading-tight">{scenarios.conservative.description}</p>
           </div>
-          <div className="border-2 border-[#059669] rounded-[12px] p-4 relative">
+          <div className="border-2 border-[var(--em)] rounded-[12px] p-4 relative">
             <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] bg-[var(--em-light)] text-[var(--em-dark)] px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
               Most likely
             </span>
@@ -232,8 +232,8 @@ export default function ResultsContent() {
             </span>
             <span className="text-xs opacity-75 font-normal">Mon–Fri 8am–8pm · No obligation</span>
           </a>
-          <span className="hidden sm:flex items-center text-xs text-gray-400">or</span>
-          <span className="flex sm:hidden items-center justify-center text-xs text-gray-400">or</span>
+          <span className="hidden sm:flex items-center text-xs text-[var(--ink-4)]">or</span>
+          <span className="flex sm:hidden items-center justify-center text-xs text-[var(--ink-4)]">or</span>
           <button
             type="button"
             onClick={() => document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })}
@@ -302,7 +302,7 @@ export default function ResultsContent() {
                   <span className="font-medium">{formatUSD(companyOfferAnalysis.offerAmount)}</span>
                 </div>
                 <div className="h-2 bg-[#f3f4f6] rounded-full">
-                  <div className="h-full bg-[#059669] rounded-full" style={{ width: `${Math.min(companyOfferAnalysis.offerPct, 100)}%` }} />
+                  <div className="h-full bg-[var(--em)] rounded-full" style={{ width: `${Math.min(companyOfferAnalysis.offerPct, 100)}%` }} />
                 </div>
               </div>
               <div>
@@ -311,7 +311,7 @@ export default function ResultsContent() {
                   <span className="font-medium text-[var(--em)]">{formatUSD(scenarios.expected.total)}</span>
                 </div>
                 <div className="h-2 bg-[#f3f4f6] rounded-full">
-                  <div className="h-full bg-[#059669] rounded-full w-full" />
+                  <div className="h-full bg-[var(--em)] rounded-full w-full" />
                 </div>
               </div>
             </div>
@@ -365,9 +365,9 @@ export default function ResultsContent() {
 
         {/* ── DIVIDER ──────────────────────────────────────────────────────── */}
         <div className="flex items-center gap-3 my-2">
-          <div className="flex-1 h-px bg-gray-200" />
-          <span className="text-xs text-gray-400 whitespace-nowrap">Your full case report is ready</span>
-          <div className="flex-1 h-px bg-gray-200" />
+          <div className="flex-1 h-px bg-[var(--border)]" />
+          <span className="text-xs text-[var(--ink-4)] whitespace-nowrap">Your full case report is ready</span>
+          <div className="flex-1 h-px bg-[var(--border)]" />
         </div>
 
         {/* ── PHASE 2: Blur Gate / Unlocked ──────────────────────────────── */}
@@ -386,7 +386,7 @@ export default function ResultsContent() {
                   <div key={i} className="py-3 border-b border-white/5 last:border-0">
                     <p className="text-[var(--em-dark)]/60 text-sm">★★★★★</p>
                     <p className="text-white/70 text-sm font-medium mt-0.5">{stateData?.name ?? 'State'} Workers&apos; Comp Specialists</p>
-                    <p className="text-gray-500 text-xs mt-0.5">Free consultation · No upfront fees</p>
+                    <p className="text-[var(--ink-3)] text-xs mt-0.5">Free consultation · No upfront fees</p>
                   </div>
                 ))}
               </div>
@@ -399,7 +399,7 @@ export default function ResultsContent() {
                 {['Date, time, and location of your injury','Names of any witnesses','Medical records so far','Written employer communications'].map((t, i) => (
                   <div key={i} className="flex gap-2 mb-2">
                     <span className="text-[var(--em-dark)]/60 flex-shrink-0">✓</span>
-                    <span className="text-gray-400/60 text-sm">{t}</span>
+                    <span className="text-[var(--ink-4)]/60 text-sm">{t}</span>
                   </div>
                 ))}
               </div>
@@ -504,7 +504,7 @@ export default function ResultsContent() {
                     onChange={e => setConsent(e.target.checked)}
                     className={`w-4 h-4 mt-0.5 flex-shrink-0 accent-[var(--em)]${submitAttempted && !consent ? ' outline outline-1 outline-[#dc2626]' : ''}`}
                   />
-                  <label htmlFor="blur-consent" className="text-gray-400 text-xs leading-relaxed cursor-pointer">
+                  <label htmlFor="blur-consent" className="text-[var(--ink-4)] text-xs leading-relaxed cursor-pointer">
                     I agree to be contacted by a licensed {stateData?.name ?? 'state'} workers&apos; comp attorney about my case. Not legal advice.{' '}
                     <Link href="/legal/terms" className="text-[var(--em-dark)] underline">Terms</Link>
                     {' · '}
@@ -522,7 +522,7 @@ export default function ResultsContent() {
                   disabled={loading}
                   className={`w-full py-4 rounded-xl text-base font-semibold mt-4 transition-colors duration-150 flex items-center justify-center gap-2 ${
                     loading || !isFormValid(name, phone, email, consent)
-                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed opacity-60'
+                      ? 'bg-gray-700 text-[var(--ink-3)] cursor-not-allowed opacity-60'
                       : 'bg-[var(--em)] hover:bg-[var(--em-light)]0 active:bg-[var(--em)] text-white cursor-pointer'
                   }`}
                 >
@@ -538,7 +538,7 @@ export default function ResultsContent() {
                 </button>
 
                 {/* ⑦ Friction-reduction text */}
-                <p className="text-gray-500 text-xs text-center mt-2">
+                <p className="text-[var(--ink-3)] text-xs text-center mt-2">
                   No spam. No sales calls unless you request one.
                 </p>
 
@@ -562,7 +562,7 @@ export default function ResultsContent() {
                 </div>
 
                 {/* ⑨ Bottom trust text */}
-                <p className="text-gray-500 text-xs text-center mt-4">
+                <p className="text-[var(--ink-3)] text-xs text-center mt-4">
                   Your information is shared only with your matched attorney.
                 </p>
 
@@ -579,7 +579,7 @@ export default function ResultsContent() {
                       <span className="text-2xl">📞</span>
                       <div>
                         <p className="text-[var(--em-dark)] font-semibold text-base">Call Now — Free Consultation</p>
-                        <p className="text-gray-400 text-sm mt-0.5">Speak with a licensed workers&apos; comp attorney today</p>
+                        <p className="text-[var(--ink-4)] text-sm mt-0.5">Speak with a licensed workers&apos; comp attorney today</p>
                       </div>
                     </div>
                     <a
@@ -596,12 +596,12 @@ export default function ResultsContent() {
                 <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6 mt-3 text-center">
                   <div className="text-4xl md:text-5xl text-[var(--em-dark)] mb-2">✓</div>
                   <h3 className="text-white text-2xl font-bold">Report Unlocked!</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed mt-3">
+                  <p className="text-[var(--ink-4)] text-sm leading-relaxed mt-3">
                     A licensed{' '}
                     <span className="text-[var(--em-dark)] font-semibold">{stateData?.name ?? 'state'}</span>
                     {' '}attorney will contact you within 1 business day.
                   </p>
-                  <p className="text-gray-500 text-xs mt-4">For urgent matters, call us directly.</p>
+                  <p className="text-[var(--ink-3)] text-xs mt-4">For urgent matters, call us directly.</p>
                 </div>
               </>
 
@@ -621,13 +621,13 @@ export default function ResultsContent() {
                   <div key={i} className="border-b border-white/5 last:border-0 py-4 first:pt-0 last:pb-0">
                     <p className="text-[var(--em-dark)] text-sm">★★★★★</p>
                     <p className="text-white font-medium mt-1">{stateData?.name ?? 'State'} Workers&apos; Comp Specialists</p>
-                    <p className="text-gray-400 text-sm mt-0.5">
+                    <p className="text-[var(--ink-4)] text-sm mt-0.5">
                       Experienced in {injuryData?.name ?? 'workplace injury'} claims · Free consultation
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
                       <span className="bg-[var(--em)]/20 text-[var(--em-dark)] text-xs px-2 py-0.5 rounded">Free consultation</span>
-                      <span className="bg-white/5 text-gray-400 text-xs px-2 py-0.5 rounded">No upfront fees</span>
-                      <span className="bg-white/5 text-gray-400 text-xs px-2 py-0.5 rounded">Contingency only</span>
+                      <span className="bg-white/5 text-[var(--ink-4)] text-xs px-2 py-0.5 rounded">No upfront fees</span>
+                      <span className="bg-white/5 text-[var(--ink-4)] text-xs px-2 py-0.5 rounded">Contingency only</span>
                     </div>
                   </div>
                 ))}
@@ -639,10 +639,10 @@ export default function ResultsContent() {
                 <div className="bg-[rgba(220,38,38,0.12)] border border-[rgba(220,38,38,0.3)] rounded-xl p-4 mt-3">
                   <p className="text-[var(--red-dead)] text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
                   {stateData?.statute && (
-                    <p className="text-gray-400 text-sm mt-1">Statute: {stateData.statute}</p>
+                    <p className="text-[var(--ink-4)] text-sm mt-1">Statute: {stateData.statute}</p>
                   )}
                 </div>
-                <p className="text-gray-400 text-sm mt-3 leading-relaxed">
+                <p className="text-[var(--ink-4)] text-sm mt-3 leading-relaxed">
                   Missing this deadline permanently ends your right to compensation.
                   Consult a licensed attorney to confirm your specific deadline.
                 </p>
@@ -651,7 +651,7 @@ export default function ResultsContent() {
               {/* Section C: First Attorney Call Guide */}
               <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
                 <p className="text-white font-semibold mb-4">Before Your Attorney Call — Be Ready</p>
-                <p className="text-gray-400 text-sm mb-3">Have these ready:</p>
+                <p className="text-[var(--ink-4)] text-sm mb-3">Have these ready:</p>
                 {[
                   'Date, time, and location of your injury',
                   'Names and contact info of any witnesses',
@@ -664,7 +664,7 @@ export default function ResultsContent() {
                     <span className="text-gray-300 text-sm">{item}</span>
                   </div>
                 ))}
-                <p className="text-gray-400 text-sm mt-4 mb-2 font-medium">Questions to ask your attorney:</p>
+                <p className="text-[var(--ink-4)] text-sm mt-4 mb-2 font-medium">Questions to ask your attorney:</p>
                 {[
                   `Have you handled ${injuryData?.name ?? 'workplace injury'} cases in ${stateData?.name ?? 'your state'} before?`,
                   "What percentage of your workers' comp cases settle vs. go to hearing?",
@@ -719,7 +719,7 @@ export default function ResultsContent() {
                 { time: 'Month 6–18', title: 'Settlement reached',          desc: `Most cases in ${stateData?.name ?? 'your state'} settle within this window. Complex cases may take longer.` },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-4 pl-7 relative">
-                  <div className="absolute left-0 w-5 h-5 rounded-full bg-[#059669] flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="absolute left-0 w-5 h-5 rounded-full bg-[var(--em)] flex items-center justify-center shrink-0 mt-0.5">
                     <div className="w-2 h-2 rounded-full bg-white" />
                   </div>
                   <div>
@@ -754,7 +754,7 @@ export default function ResultsContent() {
       {/* Mobile sticky bar */}
       {showSticky && !unlocked && (
         <div
-          className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 sm:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
+          className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[var(--border)] px-4 py-3 sm:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
         >
           <a
             href="tel:+18005550199"
@@ -766,7 +766,7 @@ export default function ResultsContent() {
             </svg>
             Call now — free consultation
           </a>
-          <p className="text-xs text-gray-400 text-center mt-1.5">
+          <p className="text-xs text-[var(--ink-4)] text-center mt-1.5">
             Free · No obligation · Mon–Fri 8am–8pm
           </p>
         </div>
@@ -802,7 +802,7 @@ function CatastrophicGate({ stateName }: { stateName: string }) {
     else setErr('Something went wrong. Please try again.')
   }
 
-  const inputCls = 'w-full border border-[var(--border)] rounded-lg px-4 py-3 text-[var(--ink)] text-sm placeholder:text-[var(--ink-4)] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669]/10'
+  const inputCls = 'w-full border border-[var(--border)] rounded-lg px-4 py-3 text-[var(--ink)] text-sm placeholder:text-[var(--ink-4)] focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/10'
 
   if (submitted) {
     return (
@@ -854,7 +854,7 @@ function CatastrophicGate({ stateName }: { stateName: string }) {
             {err && <p className="text-[var(--red-dead)] text-xs">{err}</p>}
             <button
               type="submit" disabled={submitting}
-              className="w-full bg-[#059669] hover:bg-[#047857] disabled:bg-[var(--border)] disabled:text-[var(--ink-4)] text-white font-medium py-3.5 rounded-lg text-sm transition-colors"
+              className="w-full bg-[var(--em)] hover:bg-[#047857] disabled:bg-[var(--border)] disabled:text-[var(--ink-4)] text-white font-medium py-3.5 rounded-lg text-sm transition-colors"
             >
               {submitting ? 'Submitting…' : 'Get specialist review — free →'}
             </button>

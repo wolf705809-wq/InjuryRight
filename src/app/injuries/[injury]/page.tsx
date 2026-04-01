@@ -3,11 +3,9 @@ import Link from 'next/link'
 import { INJURY_TYPES, US_STATES, INDUSTRIES } from '@/lib/pseo-data'
 import type { Metadata } from 'next'
 
-interface Props { params: { injury: string } }
+export const revalidate = 86400
 
-export function generateStaticParams() {
-  return INJURY_TYPES.map(i => ({ injury: i.slug }))
-}
+interface Props { params: { injury: string } }
 
 export function generateMetadata({ params }: Props): Metadata {
   const injury = INJURY_TYPES.find(i => i.slug === params.injury)

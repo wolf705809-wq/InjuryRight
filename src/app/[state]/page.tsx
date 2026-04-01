@@ -4,11 +4,9 @@ import StatePageTemplate from '@/components/SEO/StatePageTemplate'
 import UpdateLog from '@/components/UpdateLog'
 import type { Metadata } from 'next'
 
-interface Props { params: { state: string } }
+export const revalidate = 86400
 
-export function generateStaticParams() {
-  return US_STATES.map(s => ({ state: s.slug }))
-}
+interface Props { params: { state: string } }
 
 export function generateMetadata({ params }: Props): Metadata {
   const state = US_STATES.find(s => s.slug === params.state)

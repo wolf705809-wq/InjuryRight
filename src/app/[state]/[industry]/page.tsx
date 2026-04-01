@@ -3,15 +3,9 @@ import { US_STATES, INDUSTRIES, INJURY_TYPES } from '@/lib/pseo-data'
 import IndustryPageTemplate from '@/components/SEO/IndustryPageTemplate'
 import type { Metadata } from 'next'
 
-interface Props { params: { state: string; industry: string } }
+export const revalidate = 86400
 
-export function generateStaticParams() {
-  const params: { state: string; industry: string }[] = []
-  for (const state of US_STATES)
-    for (const industry of INDUSTRIES)
-      params.push({ state: state.slug, industry: industry.slug })
-  return params
-}
+interface Props { params: { state: string; industry: string } }
 
 export function generateMetadata({ params }: Props): Metadata {
   const state    = US_STATES.find(s => s.slug === params.state)
