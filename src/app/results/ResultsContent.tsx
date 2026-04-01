@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { WorkersCompInput, CaseStrength } from '@/types'
 import { calculateWorkersCompV2, formatUSD } from '@/lib/calculator-us'
 import { US_STATES, INJURY_TYPES } from '@/lib/pseo-data'
-import { trackCallClick } from '@/lib/supabase'
+import { saveLead, trackCallClick } from '@/lib/supabase'
 import {
   sanitizeName, validateName,
   sanitizePhone, formatPhone, validatePhone,
