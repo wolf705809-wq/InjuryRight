@@ -371,14 +371,14 @@ export default function ResultsContent() {
         </div>
 
         {/* ── PHASE 2: Blur Gate / Unlocked ──────────────────────────────── */}
-        <div id="lead-form" className="relative bg-[var(--dark)] rounded-2xl overflow-hidden mt-2 mb-6">
+        <div id="lead-form" className="relative bg-white rounded-2xl overflow-hidden mt-2 mb-6">
 
           {/* Blurred preview skeleton — absolute background, locked state only */}
           <div className={`absolute inset-0 overflow-hidden pointer-events-none select-none z-0 transition-opacity duration-700 ${
             unlocked ? 'opacity-0' : 'opacity-100 blur-[6px]'
           }`}>
             <div className="p-6 space-y-4">
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5">
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-5">
                 <p className="text-white/60 text-sm font-medium mb-3">
                   Attorneys in {stateData?.name ?? 'your state'} for {injuryData?.name ?? 'your injury'}
                 </p>
@@ -390,11 +390,11 @@ export default function ResultsContent() {
                   </div>
                 ))}
               </div>
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5">
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-5">
                 <p className="text-[rgba(220,38,38,0.5)] text-sm font-medium mb-2">⚠ Your Exact Filing Deadline</p>
                 <p className="text-white/70 text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
               </div>
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5">
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-5">
                 <p className="text-white/60 text-sm font-medium mb-3">Before Your Attorney Call — Be Ready</p>
                 {['Date, time, and location of your injury','Names of any witnesses','Medical records so far','Written employer communications'].map((t, i) => (
                   <div key={i} className="flex gap-2 mb-2">
@@ -403,7 +403,7 @@ export default function ResultsContent() {
                   </div>
                 ))}
               </div>
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5">
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-5">
                 <p className="text-white/60 text-sm font-medium mb-3">Your {stateData?.name ?? 'State'} Claim — Step by Step</p>
                 {[1,2,3,4,5,6].map(i => (
                   <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
@@ -428,7 +428,7 @@ export default function ResultsContent() {
             {!unlocked ? (
 
               /* ── FORM CARD ──────────────────────────────────────────── */
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5 md:p-8 shadow-2xl">
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-5 md:p-8 shadow-2xl">
 
                 {/* ① Social proof badge */}
                 <div className="flex items-center gap-2">
@@ -447,7 +447,7 @@ export default function ResultsContent() {
 
                 {/* ③ Title block */}
                 <div className="mt-4">
-                  <h3 className="text-white font-semibold text-xl md:text-2xl">
+                  <h3 className="text-[var(--ink)] font-semibold text-xl md:text-2xl">
                     Unlock Your Free Settlement Report
                   </h3>
                   <p className="text-[var(--em-dark)] text-sm mt-1">Free · 30 seconds · No obligation</p>
@@ -462,7 +462,7 @@ export default function ResultsContent() {
                         placeholder="Full Name"
                         value={name}
                         onChange={e => setName(sanitizeName(e.target.value))}
-                        className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
+                        className="w-full bg-white border border-[var(--border)] rounded-lg px-4 py-3.5 text-[var(--ink)] text-base placeholder-[var(--ink-4)] focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
                       />
                       {submitAttempted && sanitizeName(name).trim().length < 2 && (
                         <p className="text-[var(--red-dead)] text-xs mt-1">Please enter your full name</p>
@@ -474,7 +474,7 @@ export default function ResultsContent() {
                         placeholder="(555) 555-5555"
                         value={formatPhone(phone)}
                         onChange={e => setPhone(sanitizePhone(e.target.value))}
-                        className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
+                        className="w-full bg-white border border-[var(--border)] rounded-lg px-4 py-3.5 text-[var(--ink)] text-base placeholder-[var(--ink-4)] focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
                       />
                       {submitAttempted && !validatePhone(phone) && (
                         <p className="text-[var(--red-dead)] text-xs mt-1">Enter a valid 10-digit US phone number</p>
@@ -487,7 +487,7 @@ export default function ResultsContent() {
                       placeholder="Email address"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
-                      className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
+                      className="w-full bg-white border border-[var(--border)] rounded-lg px-4 py-3.5 text-[var(--ink)] text-base placeholder-[var(--ink-4)] focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
                     />
                     {submitAttempted && !validateEmail(email) && (
                       <p className="text-[var(--red-dead)] text-xs mt-1">Enter a valid email address</p>
@@ -543,7 +543,7 @@ export default function ResultsContent() {
                 </p>
 
                 {/* ⑧ What happens next */}
-                <div className="border-t border-white/10 mt-6 pt-6">
+                <div className="border-t border-[var(--border)] mt-6 pt-6">
                   <p className="text-[var(--em-dark)] text-xs font-semibold uppercase tracking-widest mb-4">
                     WHAT HAPPENS NEXT?
                   </p>
@@ -556,7 +556,7 @@ export default function ResultsContent() {
                       <div className="w-6 h-6 rounded-full bg-[var(--em)]/20 text-[var(--em-dark)] text-xs flex items-center justify-center flex-shrink-0">
                         {i + 1}
                       </div>
-                      <p className="text-gray-300 text-sm">{text}</p>
+                      <p className="text-[var(--ink-3)] text-sm">{text}</p>
                     </div>
                   ))}
                 </div>
@@ -573,7 +573,7 @@ export default function ResultsContent() {
               /* ── UNLOCKED CARDS ─────────────────────────────────────── */
               <>
                 {/* Card A: Call Now */}
-                <div className="bg-[var(--dark-2)] border border-[var(--em)]/30 rounded-2xl p-5">
+                <div className="bg-[var(--warm)] border border-[var(--em)]/30 rounded-2xl p-5">
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">📞</span>
@@ -593,9 +593,9 @@ export default function ResultsContent() {
                 </div>
 
                 {/* Card B: Report Unlocked */}
-                <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6 mt-3 text-center">
+                <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-6 mt-3 text-center">
                   <div className="text-4xl md:text-5xl text-[var(--em-dark)] mb-2">✓</div>
-                  <h3 className="text-white text-2xl font-bold">Report Unlocked!</h3>
+                  <h3 className="text-[var(--ink)] text-2xl font-bold">Report Unlocked!</h3>
                   <p className="text-[var(--ink-4)] text-sm leading-relaxed mt-3">
                     A licensed{' '}
                     <span className="text-[var(--em-dark)] font-semibold">{stateData?.name ?? 'state'}</span>
@@ -613,14 +613,14 @@ export default function ResultsContent() {
             <div className="relative z-20 px-4 pb-8 max-w-2xl mx-auto space-y-4">
 
               {/* Section A: Attorneys */}
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
-                <p className="text-white font-semibold mb-4">
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-6">
+                <p className="text-[var(--ink)] font-semibold mb-4">
                   Attorneys in {stateData?.name ?? 'your state'} for {injuryData?.name ?? 'your injury'}
                 </p>
                 {[1,2,3].map(i => (
                   <div key={i} className="border-b border-white/5 last:border-0 py-4 first:pt-0 last:pb-0">
                     <p className="text-[var(--em-dark)] text-sm">★★★★★</p>
-                    <p className="text-white font-medium mt-1">{stateData?.name ?? 'State'} Workers&apos; Comp Specialists</p>
+                    <p className="text-[var(--ink)] font-medium mt-1">{stateData?.name ?? 'State'} Workers&apos; Comp Specialists</p>
                     <p className="text-[var(--ink-4)] text-sm mt-0.5">
                       Experienced in {injuryData?.name ?? 'workplace injury'} claims · Free consultation
                     </p>
@@ -634,7 +634,7 @@ export default function ResultsContent() {
               </div>
 
               {/* Section B: Filing Deadline */}
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-6">
                 <p className="text-[var(--red-dead)] font-semibold">⚠ Your Exact Filing Deadline</p>
                 <div className="bg-[rgba(220,38,38,0.12)] border border-[rgba(220,38,38,0.3)] rounded-xl p-4 mt-3">
                   <p className="text-[var(--red-dead)] text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
@@ -649,8 +649,8 @@ export default function ResultsContent() {
               </div>
 
               {/* Section C: First Attorney Call Guide */}
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
-                <p className="text-white font-semibold mb-4">Before Your Attorney Call — Be Ready</p>
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-6">
+                <p className="text-[var(--ink)] font-semibold mb-4">Before Your Attorney Call — Be Ready</p>
                 <p className="text-[var(--ink-4)] text-sm mb-3">Have these ready:</p>
                 {[
                   'Date, time, and location of your injury',
@@ -661,7 +661,7 @@ export default function ResultsContent() {
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-2 mb-2 last:mb-0">
                     <span className="text-[var(--em-dark)] flex-shrink-0">✓</span>
-                    <span className="text-gray-300 text-sm">{item}</span>
+                    <span className="text-[var(--ink-3)] text-sm">{item}</span>
                   </div>
                 ))}
                 <p className="text-[var(--ink-4)] text-sm mt-4 mb-2 font-medium">Questions to ask your attorney:</p>
@@ -673,14 +673,14 @@ export default function ResultsContent() {
                 ].map((q, i) => (
                   <div key={i} className="flex gap-2 mb-2 last:mb-0">
                     <span className="text-[var(--em-dark)] flex-shrink-0 font-bold">·</span>
-                    <span className="text-gray-300 text-sm">{q}</span>
+                    <span className="text-[var(--ink-3)] text-sm">{q}</span>
                   </div>
                 ))}
               </div>
 
               {/* Section D: Step-by-step Claim Guide */}
-              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
-                <p className="text-white font-semibold mb-4">
+              <div className="bg-[var(--warm)] border border-[var(--border)] rounded-2xl p-6">
+                <p className="text-[var(--ink)] font-semibold mb-4">
                   Your {stateData?.name ?? 'State'} Workers&apos; Comp Claim — Step by Step
                 </p>
                 {[
@@ -695,7 +695,7 @@ export default function ResultsContent() {
                     <div className="w-7 h-7 rounded-full bg-[var(--em)]/20 text-[var(--em-dark)] text-sm font-bold flex items-center justify-center flex-shrink-0">
                       {i + 1}
                     </div>
-                    <p className="text-gray-300 text-sm leading-relaxed pt-1">{step}</p>
+                    <p className="text-[var(--ink-3)] text-sm leading-relaxed pt-1">{step}</p>
                   </div>
                 ))}
               </div>
