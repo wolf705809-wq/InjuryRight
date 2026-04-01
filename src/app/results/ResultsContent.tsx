@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { WorkersCompInput, CaseStrength } from '@/types'
 import { calculateWorkersCompV2, formatUSD } from '@/lib/calculator-us'
 import { US_STATES, INJURY_TYPES } from '@/lib/pseo-data'
-import { saveLead, trackCallClick } from '@/lib/supabase'
+import { trackCallClick } from '@/lib/supabase'
 import {
   sanitizeName, validateName,
   sanitizePhone, formatPhone, validatePhone,
@@ -79,8 +79,8 @@ export default function ResultsContent() {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center text-center px-4">
         <div>
-          <p className="text-[#6b7280] mb-4">No results found.</p>
-          <Link href="/calculator" className="text-[#059669] hover:underline text-sm">Go back to calculator</Link>
+          <p className="text-[var(--ink-3)] mb-4">No results found.</p>
+          <Link href="/calculator" className="text-[var(--em)] hover:underline text-sm">Go back to calculator</Link>
         </div>
       </div>
     )
@@ -98,60 +98,43 @@ export default function ResultsContent() {
     setLoading(true)
     setError(null)
 
-    const res = await saveLead({
-      name: sanitizeName(name).trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone.replace(/\D/g, ''),
-      country: 'us',
-      consent: true,
-      state: input.state,
-      industry: input.industry,
-      injuryType: input.injurySlug,
-      weeklyWage: input.weeklyWage,
-      employmentMonths: input.employmentMonths,
-      employmentStatus: input.employmentStatus,
-      employerControl: input.employerControl ?? undefined,
-      severityLevel: input.severityLevel,
-      treatmentStatus: input.treatmentStatus,
-      claimStatus: input.claimStatus,
-      companyOffer: input.companyOffer,
-      isEstimatedRating: breakdown.isEstimatedRating,
-      impairmentRating: breakdown.impairmentRatingUsed,
-      ttdEstimate: breakdown.ttd,
-      ppdEstimate: breakdown.ppd,
-      medicalEstimate: breakdown.medicalEstimate,
-      totalLow: scenarios.conservative.total,
-      totalHigh: scenarios.bestCase.total,
-      caseStrength,
-      caseStrengthScore,
-      sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+    const res = await fetch('/api/save-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.replace(/\D/g, ''),
+        country: 'us',
+        consent: true,
+        state: input.state,
+        industry: input.industry,
+        injuryType: input.injurySlug,
+        weeklyWage: input.weeklyWage,
+        employmentMonths: input.employmentMonths,
+        employmentStatus: input.employmentStatus,
+        employerControl: input.employerControl ?? undefined,
+        severityLevel: input.severityLevel,
+        treatmentStatus: input.treatmentStatus,
+        claimStatus: input.claimStatus,
+        companyOffer: input.companyOffer,
+        isEstimatedRating: breakdown.isEstimatedRating,
+        impairmentRating: breakdown.impairmentRatingUsed,
+        ttdEstimate: breakdown.ttd,
+        ppdEstimate: breakdown.ppd,
+        medicalEstimate: breakdown.medicalEstimate,
+        totalLow: scenarios.conservative.total,
+        totalHigh: scenarios.bestCase.total,
+        caseStrength,
+        caseStrengthScore,
+        sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+      }),
     })
-
-    if (!res.success) {
+    const json = await res.json()
+    if (!json.success) {
       setError('Something went wrong. Please try again.')
       setLoading(false)
       return
-    }
-
-    try {
-      await fetch('/api/send-report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          name: sanitizeName(name).trim(),
-          state: stateData?.name ?? input.state,
-          injury: injuryData?.name ?? input.injurySlug,
-          conservative: scenarios.conservative.total,
-          expected: scenarios.expected.total,
-          bestCase: scenarios.bestCase.total,
-          caseStrength,
-          sol: filingDeadline.sol,
-          statute: stateData?.statute ?? '',
-        }),
-      })
-    } catch {
-      console.warn('[send-report] Email skipped')
     }
 
     setUnlocked(true)
@@ -178,7 +161,7 @@ export default function ResultsContent() {
           <div className="mb-5 space-y-2">
             {urgencyFlags.map((flag, i) => (
               <div key={i} className="border-l-[3px] border-[#dc2626] bg-[rgba(220,38,38,0.08)] px-4 py-3 rounded-r-lg">
-                <p className="text-[13px] text-[#dc2626]">⚠ {flag}</p>
+                <p className="text-[13px] text-[var(--red-dead)]">⚠ {flag}</p>
               </div>
             ))}
           </div>
@@ -186,51 +169,50 @@ export default function ResultsContent() {
 
         {/* Coverage note */}
         {coverageNote && (
-          <div className="mb-4 border border-[#e5e7eb] bg-[#fafaf9] rounded-lg px-4 py-3">
-            <p className="text-xs text-[#374151]">{coverageNote}</p>
+          <div className="mb-4 border border-[var(--border)] bg-[#fafaf9] rounded-lg px-4 py-3">
+            <p className="text-xs text-[var(--ink-2)]">{coverageNote}</p>
           </div>
         )}
 
         {/* Estimated range */}
-        <div className="text-center py-8 bg-white rounded-[12px] border border-[#e5e7eb] mb-4">
-          <p className="text-[11px] text-[#9ca3af] uppercase tracking-[0.08em] mb-2">Estimated compensation range</p>
+        <div className="text-center py-8 bg-white rounded-[12px] border border-[var(--border)] mb-4">
+          <p className="text-[11px] text-[var(--ink-4)] uppercase tracking-[0.08em] mb-2">Estimated compensation range</p>
           <p
-            className="font-bold text-[#059669] mb-1"
-            style={{ fontSize: 'clamp(28px,6vw,48px)', letterSpacing: '-1px' }}
+            className="font-bold text-[var(--em)] mb-1 text-[clamp(28px,6vw,48px)] tracking-[-1px]"
           >
             {formatUSD(scenarios.conservative.total)} – {formatUSD(scenarios.bestCase.total)}
           </p>
-          <p className="text-[12px] text-[#9ca3af]">
+          <p className="text-[12px] text-[var(--ink-4)]">
             Based on {stateData?.name ?? 'state'} workers&apos; comp law · {new Date().getFullYear()}
           </p>
         </div>
 
         {/* Three scenarios */}
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[12px] p-4">
-            <p className="text-[11px] text-[#9ca3af] mb-1">Conservative</p>
-            <p className="text-[18px] font-semibold text-[#111827]">{formatUSD(scenarios.conservative.total)}</p>
-            <p className="text-[11px] text-[#9ca3af] mt-1 leading-tight">{scenarios.conservative.description}</p>
+          <div className="bg-[#f9fafb] border border-[var(--border)] rounded-[12px] p-4">
+            <p className="text-[11px] text-[var(--ink-4)] mb-1">Conservative</p>
+            <p className="text-[18px] font-semibold text-[var(--ink)]">{formatUSD(scenarios.conservative.total)}</p>
+            <p className="text-[11px] text-[var(--ink-4)] mt-1 leading-tight">{scenarios.conservative.description}</p>
           </div>
           <div className="border-2 border-[#059669] rounded-[12px] p-4 relative">
-            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] bg-[#ecfdf5] text-[#065f46] px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
+            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-[10px] bg-[var(--em-light)] text-[var(--em-dark)] px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
               Most likely
             </span>
-            <p className="text-[11px] text-[#9ca3af] mb-1">Expected</p>
-            <p className="text-[22px] font-bold text-[#059669]">{formatUSD(scenarios.expected.total)}</p>
-            <p className="text-[11px] text-[#6b7280] mt-1 leading-tight">{scenarios.expected.description}</p>
+            <p className="text-[11px] text-[var(--ink-4)] mb-1">Expected</p>
+            <p className="text-[22px] font-bold text-[var(--em)]">{formatUSD(scenarios.expected.total)}</p>
+            <p className="text-[11px] text-[var(--ink-3)] mt-1 leading-tight">{scenarios.expected.description}</p>
           </div>
-          <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-[12px] p-4">
-            <p className="text-[11px] text-[#9ca3af] mb-1">Best case</p>
-            <p className="text-[18px] font-semibold text-[#111827]">{formatUSD(scenarios.bestCase.total)}</p>
-            <p className="text-[11px] text-[#9ca3af] mt-1 leading-tight">{scenarios.bestCase.description}</p>
+          <div className="bg-[#f9fafb] border border-[var(--border)] rounded-[12px] p-4">
+            <p className="text-[11px] text-[var(--ink-4)] mb-1">Best case</p>
+            <p className="text-[18px] font-semibold text-[var(--ink)]">{formatUSD(scenarios.bestCase.total)}</p>
+            <p className="text-[11px] text-[var(--ink-4)] mt-1 leading-tight">{scenarios.bestCase.description}</p>
           </div>
         </div>
 
         {/* Social proof counter */}
-        <div className="flex items-center gap-2 bg-emerald-50 rounded-lg px-3 py-2 mb-4">
-          <span className="w-2 h-2 rounded-full bg-emerald-600 flex-shrink-0 animate-pulse" />
-          <span className="text-xs text-emerald-800">
+        <div className="flex items-center gap-2 bg-[var(--em-light)] rounded-lg px-3 py-2 mb-4">
+          <span className="w-2 h-2 rounded-full bg-[var(--em)] flex-shrink-0 animate-pulse" />
+          <span className="text-xs text-[var(--em-dark)]">
             <strong>{todayCount} workers</strong>{' '}in {stateData?.name ?? 'your state'} used this calculator today
           </span>
         </div>
@@ -240,7 +222,7 @@ export default function ResultsContent() {
           <a
             href="tel:+18005550199"
             onClick={handleCallClick}
-            className="flex-1 flex flex-col items-center justify-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-lg text-sm font-semibold no-underline transition-colors"
+            className="flex-1 flex flex-col items-center justify-center gap-1 bg-[var(--em)] hover:bg-[var(--em)] text-white px-5 py-3 rounded-lg text-sm font-semibold no-underline transition-colors"
           >
             <span className="flex items-center gap-2">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -255,67 +237,67 @@ export default function ResultsContent() {
           <button
             type="button"
             onClick={() => document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })}
-            className="flex-1 bg-white border border-emerald-600 text-emerald-600 hover:bg-emerald-50 px-5 py-3 rounded-lg text-sm font-medium cursor-pointer transition-colors"
+            className="flex-1 bg-white border border-[var(--em)] text-[var(--em-dark)] hover:bg-[var(--em-light)] px-5 py-3 rounded-lg text-sm font-medium cursor-pointer transition-colors"
           >
             Get written case report →
           </button>
         </div>
 
         {/* Breakdown */}
-        <div className="bg-white border border-[#e5e7eb] rounded-[12px] overflow-hidden mb-4">
+        <div className="bg-white border border-[var(--border)] rounded-[12px] overflow-hidden mb-4">
           <div className="px-5 py-3 border-b border-[#f3f4f6]">
-            <p className="text-[14px] font-semibold text-[#111827]">How this is calculated</p>
+            <p className="text-[14px] font-semibold text-[var(--ink)]">How this is calculated</p>
           </div>
           <div className="divide-y divide-[#f3f4f6]">
             <div className="flex justify-between items-center px-5 py-3">
-              <span className="text-sm text-[#374151]">Temporary Total Disability (TTD)</span>
-              <span className="text-sm font-semibold text-[#111827]">{formatUSD(breakdown.ttd)}</span>
+              <span className="text-sm text-[var(--ink-2)]">Temporary Total Disability (TTD)</span>
+              <span className="text-sm font-semibold text-[var(--ink)]">{formatUSD(breakdown.ttd)}</span>
             </div>
             <div className="flex justify-between items-center px-5 py-3">
-              <span className="text-sm text-[#374151]">Permanent Partial Disability (PPD)</span>
-              <span className="text-sm font-semibold text-[#111827]">{formatUSD(breakdown.ppd)}</span>
+              <span className="text-sm text-[var(--ink-2)]">Permanent Partial Disability (PPD)</span>
+              <span className="text-sm font-semibold text-[var(--ink)]">{formatUSD(breakdown.ppd)}</span>
             </div>
             <div className="flex justify-between items-center px-5 py-3">
-              <span className="text-sm text-[#374151]">Medical costs (estimated)</span>
-              <span className="text-sm font-semibold text-[#111827]">~{formatUSD(breakdown.medicalEstimate)}</span>
+              <span className="text-sm text-[var(--ink-2)]">Medical costs (estimated)</span>
+              <span className="text-sm font-semibold text-[var(--ink)]">~{formatUSD(breakdown.medicalEstimate)}</span>
             </div>
             {breakdown.isEstimatedRating && (
               <div className="flex justify-between items-center px-5 py-3">
-                <span className="text-sm text-[#9ca3af]">Impairment rating used</span>
-                <span className="text-sm text-[#9ca3af]">~{breakdown.impairmentRatingUsed}% (estimated)</span>
+                <span className="text-sm text-[var(--ink-4)]">Impairment rating used</span>
+                <span className="text-sm text-[var(--ink-4)]">~{breakdown.impairmentRatingUsed}% (estimated)</span>
               </div>
             )}
           </div>
-          <div className="flex justify-between items-center px-5 py-3 bg-[#f9fafb] border-t border-[#e5e7eb]">
-            <span className="text-sm font-semibold text-[#111827]">Expected total</span>
-            <span className="text-sm font-bold text-[#059669]">{formatUSD(scenarios.expected.total)}</span>
+          <div className="flex justify-between items-center px-5 py-3 bg-[#f9fafb] border-t border-[var(--border)]">
+            <span className="text-sm font-semibold text-[var(--ink)]">Expected total</span>
+            <span className="text-sm font-bold text-[var(--em)]">{formatUSD(scenarios.expected.total)}</span>
           </div>
         </div>
 
         {/* Case strength */}
-        <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 mb-4">
-          <p className="text-[14px] font-semibold text-[#111827] mb-3">Your case strength</p>
-          <div className="h-2 bg-[#e5e7eb] rounded-full mb-2">
+        <div className="bg-white border border-[var(--border)] rounded-[12px] p-5 mb-4">
+          <p className="text-[14px] font-semibold text-[var(--ink)] mb-3">Your case strength</p>
+          <div className="h-2 bg-[var(--border)] rounded-full mb-2">
             <div
-              className="h-full rounded-full transition-all duration-1000"
-              style={{ width: `${caseStrengthScore}%`, background: 'var(--em)' }}
+              className="h-full rounded-full transition-all duration-1000 bg-[var(--em)]"
+              style={{ width: `${caseStrengthScore}%` }}
             />
           </div>
-          <p className="text-[16px] font-semibold" style={{ color: 'var(--em-dark)' }}>
+          <p className="text-[16px] font-semibold text-[var(--em-dark)]">
             {caseStrength}
           </p>
-          <p className="text-[11px] text-[#9ca3af] mt-1">
+          <p className="text-[11px] text-[var(--ink-4)] mt-1">
             Impairment rating · Severity · Claim status · Employment duration
           </p>
         </div>
 
         {/* Company offer comparison */}
         {companyOfferAnalysis.offerAmount !== null && companyOfferAnalysis.offerPct !== null && (
-          <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 mb-4">
-            <p className="text-[14px] font-semibold text-[#111827] mb-3">Their offer vs. your estimate</p>
+          <div className="bg-white border border-[var(--border)] rounded-[12px] p-5 mb-4">
+            <p className="text-[14px] font-semibold text-[var(--ink)] mb-3">Their offer vs. your estimate</p>
             <div className="space-y-3">
               <div>
-                <div className="flex justify-between text-xs text-[#9ca3af] mb-1">
+                <div className="flex justify-between text-xs text-[var(--ink-4)] mb-1">
                   <span>Their offer</span>
                   <span className="font-medium">{formatUSD(companyOfferAnalysis.offerAmount)}</span>
                 </div>
@@ -324,17 +306,17 @@ export default function ResultsContent() {
                 </div>
               </div>
               <div>
-                <div className="flex justify-between text-xs text-[#9ca3af] mb-1">
+                <div className="flex justify-between text-xs text-[var(--ink-4)] mb-1">
                   <span>Expected settlement</span>
-                  <span className="font-medium text-[#059669]">{formatUSD(scenarios.expected.total)}</span>
+                  <span className="font-medium text-[var(--em)]">{formatUSD(scenarios.expected.total)}</span>
                 </div>
                 <div className="h-2 bg-[#f3f4f6] rounded-full">
-                  <div className="h-full bg-[#059669] rounded-full" style={{ width: '100%' }} />
+                  <div className="h-full bg-[#059669] rounded-full w-full" />
                 </div>
               </div>
             </div>
             {companyOfferAnalysis.message && (
-              <p className={`mt-3 text-[13px] leading-relaxed ${(companyOfferAnalysis.offerPct ?? 100) < 50 ? 'text-[#dc2626]' : 'text-[#6b7280]'}`}>
+              <p className={`mt-3 text-[13px] leading-relaxed ${(companyOfferAnalysis.offerPct ?? 100) < 50 ? 'text-[var(--red-dead)]' : 'text-[var(--ink-3)]'}`}>
                 {companyOfferAnalysis.message}
               </p>
             )}
@@ -342,31 +324,31 @@ export default function ResultsContent() {
         )}
 
         {/* Why these numbers accordion */}
-        <div className="bg-white border border-[#e5e7eb] rounded-[12px] overflow-hidden mb-4">
+        <div className="bg-white border border-[var(--border)] rounded-[12px] overflow-hidden mb-4">
           <button
             type="button"
             onClick={() => setWhyOpen(o => !o)}
             className="w-full flex items-center justify-between px-5 py-4 text-left"
           >
-            <span className="text-[14px] font-semibold text-[#111827]">Why these numbers?</span>
-            <span className="text-[#9ca3af] text-lg leading-none">{whyOpen ? '↑' : '↓'}</span>
+            <span className="text-[14px] font-semibold text-[var(--ink)]">Why these numbers?</span>
+            <span className="text-[var(--ink-4)] text-lg leading-none">{whyOpen ? '↑' : '↓'}</span>
           </button>
           {whyOpen && (
             <div className="px-5 pb-5 space-y-3 border-t border-[#f3f4f6] pt-4">
-              <p className="text-[13px] text-[#374151] leading-relaxed">{whyThisNumber.ttdExplanation}</p>
-              <p className="text-[13px] text-[#374151] leading-relaxed">{whyThisNumber.ppdExplanation}</p>
-              <p className="text-[13px] text-[#374151] leading-relaxed">{whyThisNumber.rangeExplanation}</p>
+              <p className="text-[13px] text-[var(--ink-2)] leading-relaxed">{whyThisNumber.ttdExplanation}</p>
+              <p className="text-[13px] text-[var(--ink-2)] leading-relaxed">{whyThisNumber.ppdExplanation}</p>
+              <p className="text-[13px] text-[var(--ink-2)] leading-relaxed">{whyThisNumber.rangeExplanation}</p>
               <div>
-                <p className="text-[12px] font-semibold text-[#111827] mb-2">Key factors affecting your estimate:</p>
+                <p className="text-[12px] font-semibold text-[var(--ink)] mb-2">Key factors affecting your estimate:</p>
                 <ul className="space-y-1">
                   {whyThisNumber.keyFactors.map((f, i) => (
-                    <li key={i} className="flex items-start gap-2 text-[12px] text-[#6b7280]">
-                      <span className="text-[#059669] mt-0.5 shrink-0">✓</span>{f}
+                    <li key={i} className="flex items-start gap-2 text-[12px] text-[var(--ink-3)]">
+                      <span className="text-[var(--em)] mt-0.5 shrink-0">✓</span>{f}
                     </li>
                   ))}
                 </ul>
               </div>
-              <p className="text-[11px] text-[#9ca3af] leading-relaxed pt-1">
+              <p className="text-[11px] text-[var(--ink-4)] leading-relaxed pt-1">
                 This is an estimate based on {stateData?.name ?? 'state'} law and similar cases. Actual settlement
                 depends on case-specific factors only an attorney can assess.
               </p>
@@ -375,8 +357,8 @@ export default function ResultsContent() {
         </div>
 
         {/* Statute of limitations */}
-        <div className={`rounded-lg px-4 py-3 mb-6 border ${filingDeadline.urgency === 'high' ? 'bg-[rgba(220,38,38,0.12)] border-[rgba(220,38,38,0.3)]' : 'bg-[#f9fafb] border-[#e5e7eb]'}`}>
-          <p className={`text-[13px] ${filingDeadline.urgency === 'high' ? 'text-[#dc2626] font-semibold' : 'text-[#6b7280]'}`}>
+        <div className={`rounded-lg px-4 py-3 mb-6 border ${filingDeadline.urgency === 'high' ? 'bg-[rgba(220,38,38,0.12)] border-[rgba(220,38,38,0.3)]' : 'bg-[#f9fafb] border-[var(--border)]'}`}>
+          <p className={`text-[13px] ${filingDeadline.urgency === 'high' ? 'text-[var(--red-dead)] font-semibold' : 'text-[var(--ink-3)]'}`}>
             ⏰ Filing deadline in {stateData?.name ?? 'your state'}: {filingDeadline.sol}
           </p>
         </div>
@@ -389,43 +371,43 @@ export default function ResultsContent() {
         </div>
 
         {/* ── PHASE 2: Blur Gate / Unlocked ──────────────────────────────── */}
-        <div id="lead-form" className="relative bg-[#0f1623] rounded-2xl overflow-hidden mt-2 mb-6">
+        <div id="lead-form" className="relative bg-[var(--dark)] rounded-2xl overflow-hidden mt-2 mb-6">
 
           {/* Blurred preview skeleton — absolute background, locked state only */}
           <div className={`absolute inset-0 overflow-hidden pointer-events-none select-none z-0 transition-opacity duration-700 ${
             unlocked ? 'opacity-0' : 'opacity-100 blur-[6px]'
           }`}>
             <div className="p-6 space-y-4">
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5">
                 <p className="text-white/60 text-sm font-medium mb-3">
                   Attorneys in {stateData?.name ?? 'your state'} for {injuryData?.name ?? 'your injury'}
                 </p>
                 {[1,2,3].map(i => (
                   <div key={i} className="py-3 border-b border-white/5 last:border-0">
-                    <p className="text-emerald-400/60 text-sm">★★★★★</p>
+                    <p className="text-[var(--em-dark)]/60 text-sm">★★★★★</p>
                     <p className="text-white/70 text-sm font-medium mt-0.5">{stateData?.name ?? 'State'} Workers&apos; Comp Specialists</p>
                     <p className="text-gray-500 text-xs mt-0.5">Free consultation · No upfront fees</p>
                   </div>
                 ))}
               </div>
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5">
                 <p className="text-[rgba(220,38,38,0.5)] text-sm font-medium mb-2">⚠ Your Exact Filing Deadline</p>
                 <p className="text-white/70 text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
               </div>
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5">
                 <p className="text-white/60 text-sm font-medium mb-3">Before Your Attorney Call — Be Ready</p>
                 {['Date, time, and location of your injury','Names of any witnesses','Medical records so far','Written employer communications'].map((t, i) => (
                   <div key={i} className="flex gap-2 mb-2">
-                    <span className="text-emerald-400/60 flex-shrink-0">✓</span>
+                    <span className="text-[var(--em-dark)]/60 flex-shrink-0">✓</span>
                     <span className="text-gray-400/60 text-sm">{t}</span>
                   </div>
                 ))}
               </div>
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5">
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5">
                 <p className="text-white/60 text-sm font-medium mb-3">Your {stateData?.name ?? 'State'} Claim — Step by Step</p>
                 {[1,2,3,4,5,6].map(i => (
                   <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
-                    <div className="w-7 h-7 rounded-full bg-emerald-600/20 text-emerald-400/60 text-sm font-bold flex items-center justify-center flex-shrink-0">{i}</div>
+                    <div className="w-7 h-7 rounded-full bg-[var(--em)]/20 text-[var(--em-dark)]/60 text-sm font-bold flex items-center justify-center flex-shrink-0">{i}</div>
                     <div className="h-3 bg-white/5 rounded flex-1 mt-2" />
                   </div>
                 ))}
@@ -435,10 +417,9 @@ export default function ResultsContent() {
 
           {/* Gradient overlay — fades out when unlocked */}
           <div
-            className={`absolute inset-0 z-10 pointer-events-none transition-opacity duration-700 ${
+            className={`absolute inset-0 z-10 pointer-events-none transition-opacity duration-700 bg-[linear-gradient(to_bottom,transparent_0%,#0f1623_30%)] ${
               unlocked ? 'opacity-0' : 'opacity-100'
             }`}
-            style={{ background: 'linear-gradient(to bottom, transparent 0%, #0f1623 30%)' }}
           />
 
           {/* Form card / Unlocked cards — always in normal flow (determines container height) */}
@@ -447,19 +428,19 @@ export default function ResultsContent() {
             {!unlocked ? (
 
               /* ── FORM CARD ──────────────────────────────────────────── */
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-5 md:p-8 shadow-2xl">
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-5 md:p-8 shadow-2xl">
 
                 {/* ① Social proof badge */}
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 animate-pulse" />
-                  <span className="text-emerald-400 text-sm">
+                  <span className="w-2 h-2 rounded-full bg-[var(--em)] flex-shrink-0 animate-pulse" />
+                  <span className="text-[var(--em-dark)] text-sm">
                     {socialProofCount} workers in {stateData?.name ?? 'your state'} got their report today
                   </span>
                 </div>
 
                 {/* ② Urgency bar */}
                 <div className="bg-[rgba(220,38,38,0.12)] border border-[rgba(220,38,38,0.3)] rounded-lg px-4 py-2.5 mt-3">
-                  <p className="text-[#dc2626] text-sm font-medium">
+                  <p className="text-[var(--red-dead)] text-sm font-medium">
                     ⚠ {stateData?.name ?? 'State'} filing deadline: {filingDeadline.sol} from your injury date
                   </p>
                 </div>
@@ -469,7 +450,7 @@ export default function ResultsContent() {
                   <h3 className="text-white font-semibold text-xl md:text-2xl">
                     Unlock Your Free Settlement Report
                   </h3>
-                  <p className="text-emerald-400 text-sm mt-1">Free · 30 seconds · No obligation</p>
+                  <p className="text-[var(--em-dark)] text-sm mt-1">Free · 30 seconds · No obligation</p>
                 </div>
 
                 {/* ④ Field group */}
@@ -481,10 +462,10 @@ export default function ResultsContent() {
                         placeholder="Full Name"
                         value={name}
                         onChange={e => setName(sanitizeName(e.target.value))}
-                        className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
+                        className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
                       />
                       {submitAttempted && sanitizeName(name).trim().length < 2 && (
-                        <p className="text-[#dc2626] text-xs mt-1">Please enter your full name</p>
+                        <p className="text-[var(--red-dead)] text-xs mt-1">Please enter your full name</p>
                       )}
                     </div>
                     <div>
@@ -493,10 +474,10 @@ export default function ResultsContent() {
                         placeholder="(555) 555-5555"
                         value={formatPhone(phone)}
                         onChange={e => setPhone(sanitizePhone(e.target.value))}
-                        className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
+                        className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
                       />
                       {submitAttempted && !validatePhone(phone) && (
-                        <p className="text-[#dc2626] text-xs mt-1">Enter a valid 10-digit US phone number</p>
+                        <p className="text-[var(--red-dead)] text-xs mt-1">Enter a valid 10-digit US phone number</p>
                       )}
                     </div>
                   </div>
@@ -506,10 +487,10 @@ export default function ResultsContent() {
                       placeholder="Email address"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
-                      className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/40 transition-colors duration-150"
+                      className="w-full bg-[#0d1521] border border-white/10 rounded-lg px-4 py-3.5 text-white text-base placeholder-gray-500 focus:border-[var(--em)] focus:outline-none focus:ring-1 focus:ring-[var(--em)]/40 transition-colors duration-150"
                     />
                     {submitAttempted && !validateEmail(email) && (
-                      <p className="text-[#dc2626] text-xs mt-1">Enter a valid email address</p>
+                      <p className="text-[var(--red-dead)] text-xs mt-1">Enter a valid email address</p>
                     )}
                   </div>
                 </div>
@@ -521,18 +502,18 @@ export default function ResultsContent() {
                     id="blur-consent"
                     checked={consent}
                     onChange={e => setConsent(e.target.checked)}
-                    className={`w-4 h-4 mt-0.5 flex-shrink-0 accent-[#059669]${submitAttempted && !consent ? ' outline outline-1 outline-[#dc2626]' : ''}`}
+                    className={`w-4 h-4 mt-0.5 flex-shrink-0 accent-[var(--em)]${submitAttempted && !consent ? ' outline outline-1 outline-[#dc2626]' : ''}`}
                   />
                   <label htmlFor="blur-consent" className="text-gray-400 text-xs leading-relaxed cursor-pointer">
                     I agree to be contacted by a licensed {stateData?.name ?? 'state'} workers&apos; comp attorney about my case. Not legal advice.{' '}
-                    <Link href="/legal/terms" className="text-emerald-400 underline">Terms</Link>
+                    <Link href="/legal/terms" className="text-[var(--em-dark)] underline">Terms</Link>
                     {' · '}
-                    <Link href="/legal/privacy" className="text-emerald-400 underline">Privacy</Link>
+                    <Link href="/legal/privacy" className="text-[var(--em-dark)] underline">Privacy</Link>
                   </label>
                 </div>
 
                 {/* DB error */}
-                {error && <p className="text-[#dc2626] text-sm mt-3">{error}</p>}
+                {error && <p className="text-[var(--red-dead)] text-sm mt-3">{error}</p>}
 
                 {/* ⑥ Submit button */}
                 <button
@@ -542,7 +523,7 @@ export default function ResultsContent() {
                   className={`w-full py-4 rounded-xl text-base font-semibold mt-4 transition-colors duration-150 flex items-center justify-center gap-2 ${
                     loading || !isFormValid(name, phone, email, consent)
                       ? 'bg-gray-700 text-gray-500 cursor-not-allowed opacity-60'
-                      : 'bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white cursor-pointer'
+                      : 'bg-[var(--em)] hover:bg-[var(--em-light)]0 active:bg-[var(--em)] text-white cursor-pointer'
                   }`}
                 >
                   {loading ? (
@@ -563,7 +544,7 @@ export default function ResultsContent() {
 
                 {/* ⑧ What happens next */}
                 <div className="border-t border-white/10 mt-6 pt-6">
-                  <p className="text-emerald-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                  <p className="text-[var(--em-dark)] text-xs font-semibold uppercase tracking-widest mb-4">
                     WHAT HAPPENS NEXT?
                   </p>
                   {[
@@ -572,7 +553,7 @@ export default function ResultsContent() {
                     'You decide if you want to proceed. No pressure, no obligation.',
                   ].map((text, i) => (
                     <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
-                      <div className="w-6 h-6 rounded-full bg-emerald-600/20 text-emerald-400 text-xs flex items-center justify-center flex-shrink-0">
+                      <div className="w-6 h-6 rounded-full bg-[var(--em)]/20 text-[var(--em-dark)] text-xs flex items-center justify-center flex-shrink-0">
                         {i + 1}
                       </div>
                       <p className="text-gray-300 text-sm">{text}</p>
@@ -592,19 +573,19 @@ export default function ResultsContent() {
               /* ── UNLOCKED CARDS ─────────────────────────────────────── */
               <>
                 {/* Card A: Call Now */}
-                <div className="bg-[#1a2235] border border-emerald-500/30 rounded-2xl p-5">
+                <div className="bg-[var(--dark-2)] border border-[var(--em)]/30 rounded-2xl p-5">
                   <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">📞</span>
                       <div>
-                        <p className="text-emerald-400 font-semibold text-base">Call Now — Free Consultation</p>
+                        <p className="text-[var(--em-dark)] font-semibold text-base">Call Now — Free Consultation</p>
                         <p className="text-gray-400 text-sm mt-0.5">Speak with a licensed workers&apos; comp attorney today</p>
                       </div>
                     </div>
                     <a
                       href="tel:+18005550199"
                       onClick={handleCallClick}
-                      className="block w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-5 py-3 rounded-xl text-sm whitespace-nowrap no-underline transition-colors duration-150 text-center"
+                      className="block w-full md:w-auto bg-[var(--em)] hover:bg-[var(--em-light)]0 text-white font-semibold px-5 py-3 rounded-xl text-sm whitespace-nowrap no-underline transition-colors duration-150 text-center"
                     >
                       Call Now →
                     </a>
@@ -612,12 +593,12 @@ export default function ResultsContent() {
                 </div>
 
                 {/* Card B: Report Unlocked */}
-                <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6 mt-3 text-center">
-                  <div className="text-4xl md:text-5xl text-emerald-400 mb-2">✓</div>
+                <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6 mt-3 text-center">
+                  <div className="text-4xl md:text-5xl text-[var(--em-dark)] mb-2">✓</div>
                   <h3 className="text-white text-2xl font-bold">Report Unlocked!</h3>
                   <p className="text-gray-400 text-sm leading-relaxed mt-3">
                     A licensed{' '}
-                    <span className="text-emerald-400 font-semibold">{stateData?.name ?? 'state'}</span>
+                    <span className="text-[var(--em-dark)] font-semibold">{stateData?.name ?? 'state'}</span>
                     {' '}attorney will contact you within 1 business day.
                   </p>
                   <p className="text-gray-500 text-xs mt-4">For urgent matters, call us directly.</p>
@@ -632,19 +613,19 @@ export default function ResultsContent() {
             <div className="relative z-20 px-4 pb-8 max-w-2xl mx-auto space-y-4">
 
               {/* Section A: Attorneys */}
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
                 <p className="text-white font-semibold mb-4">
                   Attorneys in {stateData?.name ?? 'your state'} for {injuryData?.name ?? 'your injury'}
                 </p>
                 {[1,2,3].map(i => (
                   <div key={i} className="border-b border-white/5 last:border-0 py-4 first:pt-0 last:pb-0">
-                    <p className="text-emerald-400 text-sm">★★★★★</p>
+                    <p className="text-[var(--em-dark)] text-sm">★★★★★</p>
                     <p className="text-white font-medium mt-1">{stateData?.name ?? 'State'} Workers&apos; Comp Specialists</p>
                     <p className="text-gray-400 text-sm mt-0.5">
                       Experienced in {injuryData?.name ?? 'workplace injury'} claims · Free consultation
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      <span className="bg-emerald-600/20 text-emerald-400 text-xs px-2 py-0.5 rounded">Free consultation</span>
+                      <span className="bg-[var(--em)]/20 text-[var(--em-dark)] text-xs px-2 py-0.5 rounded">Free consultation</span>
                       <span className="bg-white/5 text-gray-400 text-xs px-2 py-0.5 rounded">No upfront fees</span>
                       <span className="bg-white/5 text-gray-400 text-xs px-2 py-0.5 rounded">Contingency only</span>
                     </div>
@@ -653,10 +634,10 @@ export default function ResultsContent() {
               </div>
 
               {/* Section B: Filing Deadline */}
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
-                <p className="text-[#dc2626] font-semibold">⚠ Your Exact Filing Deadline</p>
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
+                <p className="text-[var(--red-dead)] font-semibold">⚠ Your Exact Filing Deadline</p>
                 <div className="bg-[rgba(220,38,38,0.12)] border border-[rgba(220,38,38,0.3)] rounded-xl p-4 mt-3">
-                  <p className="text-[#dc2626] text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
+                  <p className="text-[var(--red-dead)] text-xl font-bold">{filingDeadline.sol} from your date of injury</p>
                   {stateData?.statute && (
                     <p className="text-gray-400 text-sm mt-1">Statute: {stateData.statute}</p>
                   )}
@@ -668,7 +649,7 @@ export default function ResultsContent() {
               </div>
 
               {/* Section C: First Attorney Call Guide */}
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
                 <p className="text-white font-semibold mb-4">Before Your Attorney Call — Be Ready</p>
                 <p className="text-gray-400 text-sm mb-3">Have these ready:</p>
                 {[
@@ -679,7 +660,7 @@ export default function ResultsContent() {
                   'Your average weekly wage at the time of injury',
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-2 mb-2 last:mb-0">
-                    <span className="text-emerald-400 flex-shrink-0">✓</span>
+                    <span className="text-[var(--em-dark)] flex-shrink-0">✓</span>
                     <span className="text-gray-300 text-sm">{item}</span>
                   </div>
                 ))}
@@ -691,14 +672,14 @@ export default function ResultsContent() {
                   "What is the realistic range for my case?",
                 ].map((q, i) => (
                   <div key={i} className="flex gap-2 mb-2 last:mb-0">
-                    <span className="text-emerald-400 flex-shrink-0 font-bold">·</span>
+                    <span className="text-[var(--em-dark)] flex-shrink-0 font-bold">·</span>
                     <span className="text-gray-300 text-sm">{q}</span>
                   </div>
                 ))}
               </div>
 
               {/* Section D: Step-by-step Claim Guide */}
-              <div className="bg-[#1a2235] border border-white/10 rounded-2xl p-6">
+              <div className="bg-[var(--dark-2)] border border-white/10 rounded-2xl p-6">
                 <p className="text-white font-semibold mb-4">
                   Your {stateData?.name ?? 'State'} Workers&apos; Comp Claim — Step by Step
                 </p>
@@ -711,7 +692,7 @@ export default function ResultsContent() {
                   `If denied, file an appeal before your ${filingDeadline.sol} deadline expires`,
                 ].map((step, i) => (
                   <div key={i} className="flex items-start gap-3 mb-4 last:mb-0">
-                    <div className="w-7 h-7 rounded-full bg-emerald-600/20 text-emerald-400 text-sm font-bold flex items-center justify-center flex-shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-[var(--em)]/20 text-[var(--em-dark)] text-sm font-bold flex items-center justify-center flex-shrink-0">
                       {i + 1}
                     </div>
                     <p className="text-gray-300 text-sm leading-relaxed pt-1">{step}</p>
@@ -725,10 +706,10 @@ export default function ResultsContent() {
         </div>
 
         {/* Timeline — always visible */}
-        <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-5 mb-5">
-          <p className="text-[14px] font-semibold text-[#111827] mb-5">What the claims process typically looks like</p>
+        <div className="bg-white border border-[var(--border)] rounded-[12px] p-5 mb-5">
+          <p className="text-[14px] font-semibold text-[var(--ink)] mb-5">What the claims process typically looks like</p>
           <div className="relative">
-            <div className="absolute left-2.5 top-0 bottom-0 w-px bg-[#e5e7eb]" />
+            <div className="absolute left-2.5 top-0 bottom-0 w-px bg-[var(--border)]" />
             <div className="space-y-5">
               {[
                 { time: 'Week 1',     title: 'Free attorney consultation', desc: 'Review your claim, verify coverage, assess case strength' },
@@ -742,9 +723,9 @@ export default function ResultsContent() {
                     <div className="w-2 h-2 rounded-full bg-white" />
                   </div>
                   <div>
-                    <p className="text-[11px] text-[#059669] font-medium">{item.time}</p>
-                    <p className="text-[13px] font-semibold text-[#111827]">{item.title}</p>
-                    <p className="text-[12px] text-[#6b7280] mt-0.5">{item.desc}</p>
+                    <p className="text-[11px] text-[var(--em)] font-medium">{item.time}</p>
+                    <p className="text-[13px] font-semibold text-[var(--ink)]">{item.title}</p>
+                    <p className="text-[12px] text-[var(--ink-3)] mt-0.5">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -753,8 +734,8 @@ export default function ResultsContent() {
         </div>
 
         {/* Disclaimer */}
-        <div className="bg-[#f9fafb] border border-[#e5e7eb] rounded-lg px-4 py-4 mb-6">
-          <p className="text-[11px] text-[#9ca3af] leading-[1.7]">
+        <div className="bg-[#f9fafb] border border-[var(--border)] rounded-lg px-4 py-4 mb-6">
+          <p className="text-[11px] text-[var(--ink-4)] leading-[1.7]">
             This calculator provides estimates for informational purposes only and does not constitute legal advice.
             Results are based on state law formulas and statistical averages — actual compensation depends on the
             specific facts of your case. WorkerRight is not a law firm. Attorney advertising. Prior results do not
@@ -763,7 +744,7 @@ export default function ResultsContent() {
         </div>
 
         <div className="text-center mt-2">
-          <Link href="/calculator" className="text-[#9ca3af] hover:text-[#6b7280] text-xs transition-colors">
+          <Link href="/calculator" className="text-[var(--ink-4)] hover:text-[var(--ink-3)] text-xs transition-colors">
             ← Recalculate
           </Link>
         </div>
@@ -773,13 +754,12 @@ export default function ResultsContent() {
       {/* Mobile sticky bar */}
       {showSticky && !unlocked && (
         <div
-          className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 sm:hidden"
-          style={{ boxShadow: '0 -4px 16px rgba(0,0,0,0.08)' }}
+          className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 px-4 py-3 sm:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
         >
           <a
             href="tel:+18005550199"
             onClick={handleCallClick}
-            className="flex items-center justify-center gap-2 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3.5 rounded-lg text-sm font-semibold no-underline transition-colors"
+            className="flex items-center justify-center gap-2 w-full bg-[var(--em)] hover:bg-[var(--em)] text-white py-3.5 rounded-lg text-sm font-semibold no-underline transition-colors"
           >
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 015 15a19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
@@ -822,7 +802,7 @@ function CatastrophicGate({ stateName }: { stateName: string }) {
     else setErr('Something went wrong. Please try again.')
   }
 
-  const inputCls = 'w-full border border-[#e5e7eb] rounded-lg px-4 py-3 text-[#111827] text-sm placeholder:text-[#9ca3af] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669]/10'
+  const inputCls = 'w-full border border-[var(--border)] rounded-lg px-4 py-3 text-[var(--ink)] text-sm placeholder:text-[var(--ink-4)] focus:border-[#059669] focus:outline-none focus:ring-1 focus:ring-[#059669]/10'
 
   if (submitted) {
     return (
@@ -832,8 +812,8 @@ function CatastrophicGate({ stateName }: { stateName: string }) {
             <circle cx="24" cy="24" r="24" fill="#d1fae5" />
             <path d="M14 24l7 7 13-13" stroke="#059669" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <h2 className="text-xl font-semibold text-[#111827] mb-2">Request received</h2>
-          <p className="text-sm text-[#6b7280]">A catastrophic injury specialist in {stateName} will contact you within 24 hours.</p>
+          <h2 className="text-xl font-semibold text-[var(--ink)] mb-2">Request received</h2>
+          <p className="text-sm text-[var(--ink-3)]">A catastrophic injury specialist in {stateName} will contact you within 24 hours.</p>
         </div>
       </main>
     )
@@ -843,19 +823,19 @@ function CatastrophicGate({ stateName }: { stateName: string }) {
     <main className="min-h-screen bg-[#f9fafb] py-16">
       <div className="max-w-lg mx-auto px-4">
         <div className="bg-[rgba(220,38,38,0.08)] border border-[rgba(220,38,38,0.25)] rounded-[12px] p-7 mb-6">
-          <h2 className="text-[16px] font-semibold text-[#111827] mb-3">Your case requires specialist review</h2>
-          <p className="text-sm text-[#374151] leading-relaxed mb-3">
+          <h2 className="text-[16px] font-semibold text-[var(--ink)] mb-3">Your case requires specialist review</h2>
+          <p className="text-sm text-[var(--ink-2)] leading-relaxed mb-3">
             Catastrophic injuries involve complex long-term calculations that standard formulas significantly underestimate.
             These cases often involve lifetime benefits, vocational rehabilitation, and additional legal claims beyond
             workers&apos; comp.
           </p>
-          <p className="text-sm text-[#374151] leading-relaxed">
+          <p className="text-sm text-[var(--ink-2)] leading-relaxed">
             We won&apos;t give you a number that could cost you hundreds of thousands of dollars. Instead, connect with
             a specialist attorney who handles catastrophic injury cases.
           </p>
         </div>
-        <div className="bg-white border border-[#e5e7eb] rounded-[12px] p-6">
-          <h3 className="text-base font-semibold text-[#111827] mb-4">Get specialist review — free</h3>
+        <div className="bg-white border border-[var(--border)] rounded-[12px] p-6">
+          <h3 className="text-base font-semibold text-[var(--ink)] mb-4">Get specialist review — free</h3>
           <form onSubmit={handleSubmit} className="space-y-3">
             <input type="text"  required value={name}  onChange={e => setName(e.target.value)}  placeholder="Your full name"   className={inputCls} />
             <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com"   className={inputCls} />
@@ -864,24 +844,24 @@ function CatastrophicGate({ stateName }: { stateName: string }) {
               <input
                 type="checkbox" id="cat-consent" checked={consent}
                 onChange={e => setConsent(e.target.checked)}
-                className="mt-0.5 accent-[#059669]"
+                className="mt-0.5 accent-[var(--em)]"
               />
-              <label htmlFor="cat-consent" className="text-[11px] text-[#9ca3af] leading-relaxed cursor-pointer">
+              <label htmlFor="cat-consent" className="text-[11px] text-[var(--ink-4)] leading-relaxed cursor-pointer">
                 By submitting, I agree to be contacted by a licensed workers&apos; comp attorney regarding my claim.
                 WorkerRight may receive a referral fee. This is free to me.
               </label>
             </div>
-            {err && <p className="text-[#dc2626] text-xs">{err}</p>}
+            {err && <p className="text-[var(--red-dead)] text-xs">{err}</p>}
             <button
               type="submit" disabled={submitting}
-              className="w-full bg-[#059669] hover:bg-[#047857] disabled:bg-[#e5e7eb] disabled:text-[#9ca3af] text-white font-medium py-3.5 rounded-lg text-sm transition-colors"
+              className="w-full bg-[#059669] hover:bg-[#047857] disabled:bg-[var(--border)] disabled:text-[var(--ink-4)] text-white font-medium py-3.5 rounded-lg text-sm transition-colors"
             >
               {submitting ? 'Submitting…' : 'Get specialist review — free →'}
             </button>
           </form>
         </div>
         <div className="text-center mt-6">
-          <Link href="/calculator" className="text-[#9ca3af] hover:text-[#6b7280] text-xs">← Back to calculator</Link>
+          <Link href="/calculator" className="text-[var(--ink-4)] hover:text-[var(--ink-3)] text-xs">← Back to calculator</Link>
         </div>
       </div>
     </main>
