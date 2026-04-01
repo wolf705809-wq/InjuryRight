@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 import { WorkersCompInput, CaseStrength } from '@/types'
 import { calculateWorkersCompV2, formatUSD } from '@/lib/calculator-us'
 import { US_STATES, INJURY_TYPES } from '@/lib/pseo-data'
@@ -30,6 +31,11 @@ export default function ResultsContent() {
   const [submitAttempted, setSubmitAttempted] = useState(false)
   const [showSticky,      setShowSticky]      = useState(false)
   const [socialProofCount] = useState(() => Math.floor(Math.random() * 30) + 12)
+  const [turnstileToken,  setTurnstileToken]  = useState('')
+
+  if (typeof window !== 'undefined') {
+    (window as any).__onTurnstileCallback = (token: string) => setTurnstileToken(token)
+  }
 
   // Catastrophic gate
   const isCatastrophic = p.get('catastrophic') === 'true'
@@ -128,6 +134,7 @@ export default function ResultsContent() {
         caseStrength,
         caseStrengthScore,
         sourceUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+        turnstileToken: turnstileToken || undefined,
       }),
     })
     const json = await res.json()
@@ -139,7 +146,7 @@ export default function ResultsContent() {
 
     setUnlocked(true)
     setLoading(false)
-  }, [name, email, phone, consent, input, breakdown, scenarios, caseStrength, caseStrengthScore, stateData, injuryData, filingDeadline])
+  }, [name, email, phone, consent, turnstileToken, input, breakdown, scenarios, caseStrength, caseStrengthScore, stateData, injuryData, filingDeadline])
 
   const handleCallClick = useCallback(async () => {
     await trackCallClick({
@@ -514,6 +521,22 @@ export default function ResultsContent() {
 
                 {/* DB error */}
                 {error && <p className="text-[var(--red-dead)] text-sm mt-3">{error}</p>}
+
+                {/* Cloudflare Turnstile */}
+                {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+                  <>
+                    <Script
+                      id="cf-turnstile-script-results"
+                      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+                      strategy="afterInteractive"
+                    />
+                    <div
+                      className="cf-turnstile mt-4"
+                      data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                      data-callback="__onTurnstileCallback"
+                    />
+                  </>
+                )}
 
                 {/* ⑥ Submit button */}
                 <button
